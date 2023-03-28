@@ -16,14 +16,7 @@ static uint16_t pos;
 static uint8_t mask = 0B10000000;
 static uint8_t lastbit = 1;
 
-void clear_rgb(void) {
-  for (uint8_t i = 0; i < sizeof(LED_data); i++) {
-    LED_data[i] = 0;
-  }
-}
-
-void calc_rgb_timings(void) {
-
+void init_rgb(void) {
   clear_rgb();
 
   low_CCR1 = round(T0H / (1 / timer_freq));
@@ -32,7 +25,19 @@ void calc_rgb_timings(void) {
   high_ARR = round((T1H + T1L) / (1 / timer_freq));
 }
 
-void show_rgb(void) {
+void set_rgb(uint8_t index, int r, int g, int b) {
+  LED_data[(index * 3) + 0] = g;
+  LED_data[(index * 3) + 1] = r;
+  LED_data[(index * 3) + 2] = b;
+}
+
+void clear_rgb(void) {
+  for (uint8_t i = 0; i < sizeof(LED_data); i++) {
+    LED_data[i] = 0;
+  }
+}
+
+void update_rgb(void) {
   if (lastbit > 0) {
     if (LED_data[0] & 0B10000000) {
       timer_set_oc_value(TIM4, TIM_OC4, high_CCR1);
@@ -45,12 +50,7 @@ void show_rgb(void) {
     pos = 0;
     lastbit = 0;
     mask = 0B01000000;
-    //   timer_enable_oc_output(TIM4, TIM_OC4);
-    //   timer_enable_break_main_output(TIM4);
-    //   timer_enable_counter(TIM4);
 
-    //   timer_set_period(TIM4, 109);
-    //   timer_set_oc_value(TIM4, TIM_OC4, 59);
     timer_enable_oc_output(TIM4, TIM_OC4);
     timer_enable_break_main_output(TIM4);
     timer_enable_counter(TIM4);
@@ -80,10 +80,4 @@ void manage_rgb(void) {
     }
     lastbit = 1;
   }
-}
-
-void set_rgb(uint8_t index, int r, int g, int b) {
-  LED_data[(index * 3) + 0] = r;
-  LED_data[(index * 3) + 1] = g;
-  LED_data[(index * 3) + 2] = b;
 }
