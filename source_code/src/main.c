@@ -14,20 +14,16 @@ int main(void) {
   // gpio_set(GPIOC, GPIO13);
 
   while (1) {
-    set_rgb(0, 25, 0, 0);
-    delay(1000);
-    set_rgb(0, 0, 25, 0);
-    delay(1000);
-    set_rgb(0, 0, 0, 25);
-    delay(1000);
-    // set_rgb(0, 0, 0, 0);
-    // set_rgb(1, 25, 0, 0);
-    // delay(1000);
-    // set_rgb(1, 0, 25, 0);
-    // delay(1000);
-    // set_rgb(1, 0, 0, 25);
-    // delay(1000);
-    // set_rgb(1, 0, 0, 0);
+    for(int i = 0; i < 7; i++) {
+      set_rgb(i, 25, 0, 0);
+      delay(250);
+      set_rgb(i, 0, 25, 0);
+      delay(250);
+      set_rgb(i, 0, 0, 25);
+      delay(250);
+    }
+    clear_rgb();
+    delay(500);
     //   gpio_toggle(GPIOC, GPIO13);
   }
   return 0;

@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-
+void clear_rgb(void);
 void calc_rgb_timings(void);
 void show_rgb(void);
 void manage_rgb(void);

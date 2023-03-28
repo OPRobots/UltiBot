@@ -1,12 +1,11 @@
 #include "leds.h"
 
 #define timer_freq 84.0
-#define T0H 0.35
-#define T0L 0.8
-#define T1H 0.7
-#define T1L 0.6
+#define T0H 0.5
+#define T0L 1.2
+#define T1H 2.0
+#define T1L 1.3
 
-static long double period;
 static uint16_t low_CCR1;
 static uint16_t high_CCR1;
 static uint16_t low_ARR;
@@ -17,13 +16,16 @@ static uint16_t pos;
 static uint8_t mask = 0B10000000;
 static uint8_t lastbit = 1;
 
-void calc_rgb_timings(void) {
-
+void clear_rgb(void) {
   for (uint8_t i = 0; i < sizeof(LED_data); i++) {
     LED_data[i] = 0;
   }
+}
 
-  period = 1 / timer_freq;
+void calc_rgb_timings(void) {
+
+  clear_rgb();
+
   low_CCR1 = round(T0H / (1 / timer_freq));
   low_ARR = round((T0H + T0L) / (1 / timer_freq));
   high_CCR1 = round(T1H / (1 / timer_freq));
@@ -81,7 +83,7 @@ void manage_rgb(void) {
 }
 
 void set_rgb(uint8_t index, int r, int g, int b) {
-  LED_data[index + 0] = r;
-  LED_data[index + 1] = g;
-  LED_data[index + 2] = b;
+  LED_data[(index * 3) + 0] = r;
+  LED_data[(index * 3) + 1] = g;
+  LED_data[(index * 3) + 2] = b;
 }
