@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "source_code"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tpl": "html",
+			"dwt.h": "c",
+			"nvic.h": "c",
+			"setup.h": "c",
+			"leds.h": "c"
+		}
+	}
+}
