@@ -17,6 +17,7 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_GPIOC);
 
   rcc_periph_clock_enable(RCC_TIM4);
+  rcc_periph_clock_enable(RCC_TIM3);
 
   dwt_enable_cycle_counter();
 }
@@ -34,49 +35,84 @@ static void setup_systick(void) {
 static void setup_timer_priorities(void) {
   nvic_set_priority(NVIC_SYSTICK_IRQ, 16 * 1);
   //   nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 2);
-  nvic_set_priority(NVIC_TIM4_IRQ, 16 * 2);
+  nvic_set_priority(NVIC_TIM3_IRQ, 16 * 2);
   //   nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
   //   nvic_set_priority(NVIC_USART3_IRQ, 16 * 5);
 
   //   //   nvic_enable_irq(NVIC_TIM5_IRQ);
   //   nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
   //   nvic_enable_irq(NVIC_TIM5_IRQ);
-  nvic_enable_irq(NVIC_TIM4_IRQ);
+  nvic_enable_irq(NVIC_TIM3_IRQ);
   //   nvic_enable_irq(NVIC_USART3_IRQ);
 }
 
 static void setup_gpio(void) {
   // Builtin LED
   gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13);
+  // Builtin BTN
+  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO0);
 
   // RGB LED
-  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9);
-  gpio_set_af(GPIOB, GPIO_AF2, GPIO9);
+  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO1);
+  gpio_set_af(GPIOB, GPIO_AF2, GPIO1);
+
+  // Salida PWM para los motores
+  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO6 | GPIO7 | GPIO8 | GPIO9);
+  gpio_set_af(GPIOB, GPIO_AF2, GPIO6 | GPIO7 | GPIO8 | GPIO9);
 }
 
 static void setup_rgb_timer(void) {
-  timer_set_mode(TIM4, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-  timer_set_prescaler(TIM4, 0);
-  timer_enable_preload(TIM4);
-  timer_set_repetition_counter(TIM4, 0);
-  timer_continuous_mode(TIM4);
-  timer_enable_irq(TIM4, TIM_DIER_UIE);
-  timer_set_oc_mode(TIM4, TIM_OC4, TIM_OCM_PWM1);
+  timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+  timer_set_prescaler(TIM3, 0);
+  timer_enable_preload(TIM3);
+  timer_set_repetition_counter(TIM3, 0);
+  timer_continuous_mode(TIM3);
+  timer_enable_irq(TIM3, TIM_DIER_UIE);
+  timer_set_oc_mode(TIM3, TIM_OC4, TIM_OCM_PWM1);
 
   init_rgb();
 }
 
-void tim4_isr(void) {
-  if (timer_get_flag(TIM4, TIM_SR_UIF)) {
-    timer_clear_flag(TIM4, TIM_SR_UIF);
+void tim3_isr(void) {
+  if (timer_get_flag(TIM3, TIM_SR_UIF)) {
+    timer_clear_flag(TIM3, TIM_SR_UIF);
     manage_rgb();
   }
+}
+
+static void setup_motors_pwm(void) {
+  timer_set_mode(TIM4, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+
+  // timer_set_prescaler(TIM4, 2); // 27khz🔥
+  timer_set_prescaler(TIM4, 80); // 1khz
+  timer_set_repetition_counter(TIM4, 0);
+  timer_enable_preload(TIM4);
+  timer_continuous_mode(TIM4);
+  timer_set_period(TIM4, MOTORES_MAX_PWM);
+
+  timer_set_oc_mode(TIM4, TIM_OC1, TIM_OCM_PWM1);
+  timer_set_oc_mode(TIM4, TIM_OC2, TIM_OCM_PWM1);
+  timer_set_oc_mode(TIM4, TIM_OC3, TIM_OCM_PWM1);
+  timer_set_oc_mode(TIM4, TIM_OC4, TIM_OCM_PWM1);
+  timer_set_oc_value(TIM4, TIM_OC1, MOTORES_MAX_PWM);
+  timer_set_oc_value(TIM4, TIM_OC2, MOTORES_MAX_PWM - MOTORES_MAX_PWM*0.25);
+  timer_set_oc_value(TIM4, TIM_OC3, MOTORES_MAX_PWM);
+  timer_set_oc_value(TIM4, TIM_OC4, MOTORES_MAX_PWM - MOTORES_MAX_PWM*0.25);
+  timer_enable_oc_output(TIM4, TIM_OC1);
+  timer_enable_oc_output(TIM4, TIM_OC2);
+  timer_enable_oc_output(TIM4, TIM_OC3);
+  timer_enable_oc_output(TIM4, TIM_OC4);
+
+  timer_enable_break_main_output(TIM4);
+
+  timer_enable_counter(TIM4);
 }
 
 void setup(void) {
   setup_clock();
   setup_gpio();
   setup_rgb_timer();
+  setup_motors_pwm();
   setup_timer_priorities();
 
   setup_systick();

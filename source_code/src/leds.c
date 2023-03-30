@@ -40,31 +40,31 @@ void clear_rgb(void) {
 void update_rgb(void) {
   if (lastbit > 0) {
     if (LED_data[0] & 0B10000000) {
-      timer_set_oc_value(TIM4, TIM_OC4, high_CCR1);
-      timer_set_period(TIM4, high_ARR);
+      timer_set_oc_value(TIM3, TIM_OC4, high_CCR1);
+      timer_set_period(TIM3, high_ARR);
     } else {
-      timer_set_oc_value(TIM4, TIM_OC4, low_CCR1);
-      timer_set_period(TIM4, low_ARR);
+      timer_set_oc_value(TIM3, TIM_OC4, low_CCR1);
+      timer_set_period(TIM3, low_ARR);
     }
 
     pos = 0;
     lastbit = 0;
     mask = 0B01000000;
 
-    timer_enable_oc_output(TIM4, TIM_OC4);
-    timer_enable_break_main_output(TIM4);
-    timer_enable_counter(TIM4);
+    timer_enable_oc_output(TIM3, TIM_OC4);
+    timer_enable_break_main_output(TIM3);
+    timer_enable_counter(TIM3);
   }
 }
 
 void manage_rgb(void) {
   if (pos < sizeof(LED_data)) {
     if (LED_data[pos] & mask) {
-      timer_set_oc_value(TIM4, TIM_OC4, high_CCR1);
-      timer_set_period(TIM4, high_ARR);
+      timer_set_oc_value(TIM3, TIM_OC4, high_CCR1);
+      timer_set_period(TIM3, high_ARR);
     } else {
-      timer_set_oc_value(TIM4, TIM_OC4, low_CCR1);
-      timer_set_period(TIM4, low_ARR);
+      timer_set_oc_value(TIM3, TIM_OC4, low_CCR1);
+      timer_set_period(TIM3, low_ARR);
     }
     if (mask == 1) {
       mask = 0B10000000;
@@ -74,9 +74,9 @@ void manage_rgb(void) {
     }
   } else {
     if (lastbit) {
-      timer_disable_oc_output(TIM4, TIM_OC4);
-      timer_disable_break_main_output(TIM4);
-      timer_disable_counter(TIM4);
+      timer_disable_oc_output(TIM3, TIM_OC4);
+      timer_disable_break_main_output(TIM3);
+      timer_disable_counter(TIM3);
     }
     lastbit = 1;
   }
