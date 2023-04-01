@@ -2,6 +2,8 @@
 #include "delay.h"
 #include "leds.h"
 #include "setup.h"
+#include "usart.h"
+
 
 void sys_tick_handler(void) {
   clock_tick();
@@ -26,7 +28,8 @@ int main(void) {
     //   delay(250);
     // }
     // clear_rgb();
-    // delay(500);
+    printf("pato\n");
+    delay(500);
   }
   return 0;
 }

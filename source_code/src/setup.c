@@ -15,6 +15,8 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOC);
+  
+  rcc_periph_clock_enable(RCC_USART1);
 
   rcc_periph_clock_enable(RCC_TIM4);
   rcc_periph_clock_enable(RCC_TIM3);
@@ -37,13 +39,13 @@ static void setup_timer_priorities(void) {
   //   nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 2);
   nvic_set_priority(NVIC_TIM3_IRQ, 16 * 2);
   //   nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
-  //   nvic_set_priority(NVIC_USART3_IRQ, 16 * 5);
+    nvic_set_priority(NVIC_USART1_IRQ, 16 * 3);
 
   //   //   nvic_enable_irq(NVIC_TIM5_IRQ);
   //   nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
   //   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_TIM3_IRQ);
-  //   nvic_enable_irq(NVIC_USART3_IRQ);
+    nvic_enable_irq(NVIC_USART1_IRQ);
 }
 
 static void setup_gpio(void) {
@@ -59,6 +61,10 @@ static void setup_gpio(void) {
   // Salida PWM para los motores
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO6 | GPIO7 | GPIO8 | GPIO9);
   gpio_set_af(GPIOB, GPIO_AF2, GPIO6 | GPIO7 | GPIO8 | GPIO9);
+
+    // USART1
+  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
+  gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
 }
 
 static void setup_rgb_timer(void) {
@@ -108,12 +114,27 @@ static void setup_motors_pwm(void) {
   timer_enable_counter(TIM4);
 }
 
+
+static void setup_usart(void) {
+  usart_set_baudrate(USART1, 115200);
+  usart_set_databits(USART1, 8);
+  usart_set_stopbits(USART1, USART_STOPBITS_1);
+  usart_set_parity(USART1, USART_PARITY_NONE);
+  usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
+  usart_set_mode(USART1, USART_MODE_TX_RX);
+  // USART_CR1(USART1) |= USART_CR1_RXNEIE;
+  // usart_enable_tx_interrupt(USART1);
+  usart_enable(USART1);
+}
+
+
 void setup(void) {
   setup_clock();
   setup_gpio();
   setup_rgb_timer();
   setup_motors_pwm();
-  setup_timer_priorities();
+  setup_usart();
 
+  setup_timer_priorities();
   setup_systick();
 }
