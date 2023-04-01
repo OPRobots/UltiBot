@@ -13,6 +13,7 @@
 
 #include "config.h"
 #include "leds.h"
+#include "sensors.h"
 
 void setup(void);
 

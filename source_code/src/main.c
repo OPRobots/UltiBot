@@ -3,6 +3,7 @@
 #include "leds.h"
 #include "setup.h"
 #include "usart.h"
+#include "sensors.h"
 
 
 void sys_tick_handler(void) {
@@ -28,8 +29,11 @@ int main(void) {
     //   delay(250);
     // }
     // clear_rgb();
-    printf("pato\n");
-    delay(500);
+    for(int i = 0; i< get_sensors_num(); i++){
+      printf("%d: %d\t", i, get_sensors_raw()[i]);
+    }
+    printf("\n");
+    delay(50);
   }
   return 0;
 }
