@@ -15,9 +15,9 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOC);
-  
+
   rcc_periph_clock_enable(RCC_USART1);
-  
+
   rcc_periph_clock_enable(RCC_ADC1);
 
   rcc_periph_clock_enable(RCC_TIM4);
@@ -38,23 +38,27 @@ static void setup_systick(void) {
 
 static void setup_timer_priorities(void) {
   nvic_set_priority(NVIC_SYSTICK_IRQ, 16 * 1);
-  nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 2);
-  nvic_set_priority(NVIC_TIM3_IRQ, 16 * 3);
+  nvic_set_priority(NVIC_TIM3_IRQ, 16 * 2);
+  nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 3);
   //   nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
-    nvic_set_priority(NVIC_USART1_IRQ, 16 * 4);
+  nvic_set_priority(NVIC_USART1_IRQ, 16 * 4);
 
   //   //   nvic_enable_irq(NVIC_TIM5_IRQ);
-    nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
+  nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
   //   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_TIM3_IRQ);
-    nvic_enable_irq(NVIC_USART1_IRQ);
+  nvic_enable_irq(NVIC_USART1_IRQ);
 }
 
 static void setup_gpio(void) {
   // Builtin LED
   gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13);
-  // Builtin BTN
-  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO0);
+
+  // Botón de inicio
+  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO15);
+
+  // Botones de menú
+  gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO13 | GPIO14 | GPIO15);
 
   // RGB LED
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO1);
@@ -64,10 +68,10 @@ static void setup_gpio(void) {
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO6 | GPIO7 | GPIO8 | GPIO9);
   gpio_set_af(GPIOB, GPIO_AF2, GPIO6 | GPIO7 | GPIO8 | GPIO9);
 
-  // Entradas analógicas sensores 
-    gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
+  // Entradas analógicas sensores
+  gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
 
-    // USART1
+  // USART1
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
   gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
 }
@@ -105,10 +109,10 @@ static void setup_motors_pwm(void) {
   timer_set_oc_mode(TIM4, TIM_OC2, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM4, TIM_OC3, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM4, TIM_OC4, TIM_OCM_PWM1);
-  timer_set_oc_value(TIM4, TIM_OC1, MOTORES_MAX_PWM);
-  timer_set_oc_value(TIM4, TIM_OC2, MOTORES_MAX_PWM - MOTORES_MAX_PWM*0.25);
-  timer_set_oc_value(TIM4, TIM_OC3, MOTORES_MAX_PWM);
-  timer_set_oc_value(TIM4, TIM_OC4, MOTORES_MAX_PWM - MOTORES_MAX_PWM*0.25);
+  timer_set_oc_value(TIM4, TIM_OC1, MOTORES_MAX_PWM - MOTORES_MAX_PWM * 0.5); //izq adelante
+  timer_set_oc_value(TIM4, TIM_OC2, MOTORES_MAX_PWM);                         //der atrás
+  timer_set_oc_value(TIM4, TIM_OC3, MOTORES_MAX_PWM - MOTORES_MAX_PWM * 0.5); //iz adelante
+  timer_set_oc_value(TIM4, TIM_OC4, MOTORES_MAX_PWM);                         // iz atrás
   timer_enable_oc_output(TIM4, TIM_OC1);
   timer_enable_oc_output(TIM4, TIM_OC2);
   timer_enable_oc_output(TIM4, TIM_OC3);
@@ -118,7 +122,6 @@ static void setup_motors_pwm(void) {
 
   timer_enable_counter(TIM4);
 }
-
 
 static void setup_usart(void) {
   usart_set_baudrate(USART1, 115200);
@@ -184,7 +187,6 @@ void dma2_stream0_isr(void) {
     dma_clear_interrupt_flags(DMA2, DMA_STREAM0, DMA_TCIF);
   }
 }
-
 
 void setup(void) {
   setup_clock();
