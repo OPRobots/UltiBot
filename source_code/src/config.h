@@ -13,5 +13,6 @@
 #define LECTURA_MINIMO_SENSORES_LINEA 0
 
 #define MOTORES_MAX_PWM 1023
+#define LEDS_MAX_PWM 100//255
 
 #endif
