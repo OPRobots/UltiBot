@@ -9,6 +9,7 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_rgb();
+  control_main_loop();
 }
 
 int main(void) {
