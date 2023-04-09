@@ -34,10 +34,10 @@ void init_rgb(void) {
   high_ARR = round((T1H + T1L) / (1 / timer_freq));
 }
 
-void set_rgb(uint8_t index, int r, int g, int b) {
-  LED_data[(index * 3) + 0] = g;
-  LED_data[(index * 3) + 1] = r;
-  LED_data[(index * 3) + 2] = b;
+void set_rgb(enum LEDS led, int r, int g, int b) {
+  LED_data[(led * 3) + 0] = g;
+  LED_data[(led * 3) + 1] = r;
+  LED_data[(led * 3) + 2] = b;
 }
 
 void clear_rgb(void) {
@@ -105,7 +105,7 @@ static void update_rainbow_rgb(void) {
   }
 }
 
-void set_rainbow_rgb(uint8_t led) {
+void set_rainbow_rgb(enum LEDS led) {
   if (get_clock_ticks() > rainbow_rgb_timer + 10) {
     rainbow_rgb_timer = get_clock_ticks();
     update_rainbow_rgb();

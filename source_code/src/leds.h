@@ -18,11 +18,11 @@ enum LEDS { LED_FRONT = 3,
             LED_CENTER = 6 };
 
 void init_rgb(void);
-void set_rgb(uint8_t index, int r, int g, int b);
+void set_rgb(enum LEDS led, int r, int g, int b);
 void clear_rgb(void);
 void update_rgb(void);
 void manage_rgb(void);
-void set_rainbow_rgb(uint8_t led);
+void set_rainbow_rgb(enum LEDS led);
 void set_loading_rgb(void);
 
 #endif
