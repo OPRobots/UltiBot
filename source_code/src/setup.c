@@ -109,10 +109,10 @@ static void setup_motors_pwm(void) {
   timer_set_oc_mode(TIM4, TIM_OC2, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM4, TIM_OC3, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM4, TIM_OC4, TIM_OCM_PWM1);
-  timer_set_oc_value(TIM4, TIM_OC1, MOTORES_MAX_PWM - MOTORES_MAX_PWM * 0); //izq adelante
-  timer_set_oc_value(TIM4, TIM_OC2, MOTORES_MAX_PWM);                         //der atrás
-  timer_set_oc_value(TIM4, TIM_OC3, MOTORES_MAX_PWM - MOTORES_MAX_PWM * 0); //iz adelante
-  timer_set_oc_value(TIM4, TIM_OC4, MOTORES_MAX_PWM);                         // iz atrás
+  timer_set_oc_value(TIM4, TIM_OC1, MOTORES_MAX_PWM);
+  timer_set_oc_value(TIM4, TIM_OC2, MOTORES_MAX_PWM);
+  timer_set_oc_value(TIM4, TIM_OC3, MOTORES_MAX_PWM);
+  timer_set_oc_value(TIM4, TIM_OC4, MOTORES_MAX_PWM);
   timer_enable_oc_output(TIM4, TIM_OC1);
   timer_enable_oc_output(TIM4, TIM_OC2);
   timer_enable_oc_output(TIM4, TIM_OC3);
