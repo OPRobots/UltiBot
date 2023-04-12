@@ -11,15 +11,16 @@
 
 #define NUM_SENSORS 8
 #define NUM_SENSORS_LINE 2
-#define RIVAL_SENSOR_THRESHOLD 100
-#define LINE_SENSOR_THRESHOLD 200
+#define RIVAL_SENSOR_THRESHOLD 550
+#define RIVAL_SENSOR_MAX 3300
+#define LINE_SENSOR_THRESHOLD 2000
 
-enum SENSORS { SENSOR_FRONT_LEFT = 0,
-               SENSOR_FRONT_RIGHT = 1,
+enum SENSORS { SENSOR_FRONT_RIGHT = 0,
+               SENSOR_FRONT_LEFT = 1,
                SENSOR_ANGLE_LEFT = 2,
                SENSOR_ANGLE_RIGHT = 3,
-               SENSOR_LEFT = 4,
-               SENSOR_RIGHT = 5,
+               SENSOR_LEFT = 5,
+               SENSOR_RIGHT = 4,
                SENSOR_LINE_LEFT = 6,
                SENSOR_LINE_RIGHT = 7 };
 
