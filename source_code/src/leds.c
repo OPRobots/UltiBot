@@ -34,7 +34,7 @@ void init_rgb(void) {
   high_ARR = round((T1H + T1L) / (1 / timer_freq));
 }
 
-void set_rgb(enum LEDS led, int r, int g, int b) {
+void set_rgb(enum LEDS led, uint8_t r, uint8_t g, uint8_t b) {
   LED_data[(led * 3) + 0] = g;
   LED_data[(led * 3) + 1] = r;
   LED_data[(led * 3) + 2] = b;
