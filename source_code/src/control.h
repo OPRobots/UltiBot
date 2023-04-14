@@ -4,6 +4,7 @@
 #include "config.h"
 #include "delay.h"
 #include "math.h"
+#include "motors.h"
 #include "stdio.h"
 #include <libopencm3/stm32/gpio.h>
 

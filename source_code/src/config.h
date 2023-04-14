@@ -15,4 +15,9 @@
 #define MOTORES_MAX_PWM 1023
 #define LEDS_MAX_PWM 100//255
 
+#define MILLIS_INICIO 3000
+
+
+uint16_t get_start_millis(void);
+
 #endif

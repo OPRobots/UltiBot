@@ -27,4 +27,15 @@ void set_competicion_iniciada(bool state) {
  *
  */
 void control_main_loop(void) {
+  if (is_competicion_iniciada()) {
+    set_motors_speed(50, 50);
+    if (get_sensor_calibrated(SENSOR_LINE_LEFT) < LINE_SENSOR_THRESHOLD || get_sensor_calibrated(SENSOR_LINE_RIGHT) < LINE_SENSOR_THRESHOLD) {
+      set_motors_speed(-50, -50);
+      delay(200);
+      set_motors_speed(-50, 50);
+      delay(300);
+    }
+  } else {
+    set_motors_speed(0, 0);
+  }
 }
