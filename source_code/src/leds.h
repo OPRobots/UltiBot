@@ -24,5 +24,6 @@ void update_rgb(void);
 void manage_rgb(void);
 void set_rainbow_rgb(enum LEDS led);
 void set_loading_rgb(void);
+void set_fatal_error_rgb(void);
 
 #endif
