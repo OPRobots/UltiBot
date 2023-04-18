@@ -4,6 +4,7 @@
 #include "config.h"
 #include "delay.h"
 #include "leds.h"
+#include "utils.h"
 #include "stdint.h"
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
@@ -30,5 +31,7 @@ volatile uint16_t *get_sensors_raw(void);
 uint16_t get_sensor_raw(enum SENSORS index);
 uint16_t get_sensor_calibrated(enum SENSORS index);
 bool get_sensor_digital(enum SENSORS index);
+
+void update_sensors_readings(void);
 
 #endif

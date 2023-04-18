@@ -31,7 +31,7 @@ uint16_t get_sensor_calibrated(enum SENSORS index) {
       return LECTURA_MINIMO_SENSORES_LINEA;
     }
   } else {
-    if (sensors_raw[index] > RIVAL_SENSOR_THRESHOLD) {
+    if (sensors_raw[index] > RIVAL_SENSOR_THRESHOLD && sensors_raw[index] < RIVAL_SENSOR_MAX) {
       return sensors_raw[index];
     } else {
       return 0;
@@ -45,18 +45,18 @@ bool get_sensor_digital(enum SENSORS index) {
       return true;
     }
   } else {
-    if (sensors_raw[index] > RIVAL_SENSOR_THRESHOLD) {
+    if (sensors_raw[index] > RIVAL_SENSOR_THRESHOLD && sensors_raw[index] < RIVAL_SENSOR_MAX) {
       return true;
     }
   }
   return false;
 }
 
-void update_sensors_readings() {
+void update_sensors_readings(void) {
   uint32_t sensor_avg = 0;
   uint32_t sensor_sum = 0;
-  for (uint8_t sensor = 0; sensor < NUM_SENSORS - NUM_SENSORS_LINE; i++) {
-    sensors_digital[sensor] = sensors_raw[index] > RIVAL_SENSOR_THRESHOLD;
+  for (uint8_t sensor = 0; sensor < NUM_SENSORS - NUM_SENSORS_LINE; sensor++) {
+    sensors_digital[sensor] = sensors_raw[sensor] > RIVAL_SENSOR_THRESHOLD;
     sensors_weight[sensor] = sensors_raw[sensor] > RIVAL_SENSOR_THRESHOLD ? map(sensors_raw[sensor], RIVAL_SENSOR_THRESHOLD, RIVAL_SENSOR_MAX, 1, 10) : 0;
 
     if (sensors_digital[sensor]) {
