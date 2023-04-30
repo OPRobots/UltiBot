@@ -23,7 +23,10 @@ static uint8_t rainbow_color_asc = 1;
 
 static uint32_t loading_rgb_timer = 0;
 static uint8_t loading_rgb_index = 0;
-static uint8_t loading_rgb_leds[] = { LED_FRONT, LED_FRONT_RIGHT, LED_BACK_RIGHT, LED_BACK, LED_BACK_LEFT, LED_FRONT_LEFT };
+static uint8_t loading_rgb_leds[] = {LED_FRONT, LED_FRONT_RIGHT, LED_BACK_RIGHT, LED_BACK, LED_BACK_LEFT, LED_FRONT_LEFT};
+
+static uint32_t fatal_error_rgb_timer = 0;
+static bool fatal_error_rgb_on = false;
 
 void init_rgb(void) {
   clear_rgb();
@@ -34,7 +37,7 @@ void init_rgb(void) {
   high_ARR = round((T1H + T1L) / (1 / timer_freq));
 }
 
-void set_rgb(enum LEDS led, int r, int g, int b) {
+void set_rgb(enum LEDS led, uint8_t r, uint8_t g, uint8_t b) {
   LED_data[(led * 3) + 0] = g;
   LED_data[(led * 3) + 1] = r;
   LED_data[(led * 3) + 2] = b;
@@ -125,5 +128,21 @@ void set_loading_rgb(void) {
     if (loading_rgb_index > sizeof(loading_rgb_leds) / sizeof(loading_rgb_leds[0])) {
       loading_rgb_index = 0;
     }
+  }
+}
+
+void set_fatal_error_rgb(void) {
+  if (get_clock_ticks() > fatal_error_rgb_timer + 50) {
+    if (fatal_error_rgb_on) {
+      for (uint8_t led = 0; led < 7; led++) {
+        LED_data[(led * 3) + 0] = 0;
+        LED_data[(led * 3) + 1] = 100;
+        LED_data[(led * 3) + 2] = 0;
+      }
+    } else {
+      clear_rgb();
+    }
+    fatal_error_rgb_timer = get_clock_ticks();
+    fatal_error_rgb_on = !fatal_error_rgb_on;
   }
 }
