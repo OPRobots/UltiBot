@@ -1,7 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "source_code"
+			"path": "source_code/ATmega328"
+		},
+		{
+			"path": "source_code/STM32F4CCU6"
 		}
 	],
 	"settings": {
