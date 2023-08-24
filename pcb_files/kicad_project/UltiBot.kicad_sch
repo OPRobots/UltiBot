@@ -1,0 +1,48 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid 24197ddb-6745-4cc2-89a2-3cda2c96a453)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 111.76 22.86) (size 85.09 44.45) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 801aac4b-54d6-4691-9ae2-22a76f924486)
+    (property "Sheetname" "BluePill&FOC" (at 111.76 22.1484 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Bluepill_FOC.kicad_sch" (at 111.76 67.8946 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "UltiBot"
+        (path "/24197ddb-6745-4cc2-89a2-3cda2c96a453" (page "3"))
+      )
+    )
+  )
+
+  (sheet (at 24.13 22.86) (size 82.55 44.45) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 922bab18-0964-4bd0-af02-17c76d29e803)
+    (property "Sheetname" "BlackPill&Main" (at 24.13 22.1484 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "BlackPill_Main.kicad_sch" (at 24.13 67.8946 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "UltiBot"
+        (path "/24197ddb-6745-4cc2-89a2-3cda2c96a453" (page "2"))
+      )
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)
