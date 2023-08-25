@@ -10,11 +10,14 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/spi.h>
 
 #include "config.h"
 #include "leds.h"
 #include "sensors.h"
 
 void setup(void);
+void setup_spi_high_speed(void);
+void setup_spi_low_speed(void);
 
 #endif

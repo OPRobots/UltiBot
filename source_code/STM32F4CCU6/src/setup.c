@@ -20,6 +20,8 @@ static void setup_clock(void) {
 
   rcc_periph_clock_enable(RCC_ADC1);
 
+  rcc_periph_clock_enable(RCC_SPI2);
+
   rcc_periph_clock_enable(RCC_TIM4);
   rcc_periph_clock_enable(RCC_TIM3);
 
@@ -51,22 +53,13 @@ static void setup_timer_priorities(void) {
 }
 
 static void setup_gpio(void) {
-  // Builtin LED
-  gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13);
+  // LEDs
+  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO8);
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO1 | GPIO2 | GPIO10);
+  gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13 | GPIO14 | GPIO15);
 
-  // Botón de inicio
-  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO15);
-
-  // Botones de menú
-  gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO13 | GPIO14 | GPIO15);
-
-  // RGB LED
-  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO1);
-  gpio_set_af(GPIOB, GPIO_AF2, GPIO1);
-
-  // Salida PWM para los motores
-  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO6 | GPIO7 | GPIO8 | GPIO9);
-  gpio_set_af(GPIOB, GPIO_AF2, GPIO6 | GPIO7 | GPIO8 | GPIO9);
+  // Botón de inicio y modo de menú
+  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO11 | GPIO12);
 
   // Entradas analógicas sensores
   gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
@@ -74,53 +67,34 @@ static void setup_gpio(void) {
   // USART1
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
   gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
+
+  // Entradas Encoders
+  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO4 | GPIO5 | GPIO6 | GPIO7);
+  gpio_set_af(GPIOB, GPIO_AF2, GPIO4 | GPIO5 | GPIO6 | GPIO7);
+
+  // SPI
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12);
+  gpio_set(GPIOB, GPIO12);
+  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, GPIO13 | GPIO14 | GPIO15);
+  gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
 }
 
-static void setup_rgb_timer(void) {
-  timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-  timer_set_prescaler(TIM3, 0);
-  timer_enable_preload(TIM3);
-  timer_set_repetition_counter(TIM3, 0);
-  timer_continuous_mode(TIM3);
-  timer_enable_irq(TIM3, TIM_DIER_UIE);
-  timer_set_oc_mode(TIM3, TIM_OC4, TIM_OCM_PWM1);
-
-  init_rgb();
-}
-
-void tim3_isr(void) {
-  if (timer_get_flag(TIM3, TIM_SR_UIF)) {
-    timer_clear_flag(TIM3, TIM_SR_UIF);
-    manage_rgb();
-  }
-}
-
-static void setup_motors_pwm(void) {
-  timer_set_mode(TIM4, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-
-  // timer_set_prescaler(TIM4, 2); // 27khz🔥
-  timer_set_prescaler(TIM4, 80); // 1khz
-  timer_set_repetition_counter(TIM4, 0);
-  timer_enable_preload(TIM4);
-  timer_continuous_mode(TIM4);
-  timer_set_period(TIM4, MOTORES_MAX_PWM);
-
-  timer_set_oc_mode(TIM4, TIM_OC1, TIM_OCM_PWM1);
-  timer_set_oc_mode(TIM4, TIM_OC2, TIM_OCM_PWM1);
-  timer_set_oc_mode(TIM4, TIM_OC3, TIM_OCM_PWM1);
-  timer_set_oc_mode(TIM4, TIM_OC4, TIM_OCM_PWM1);
-  timer_set_oc_value(TIM4, TIM_OC1, MOTORES_MAX_PWM);
-  timer_set_oc_value(TIM4, TIM_OC2, MOTORES_MAX_PWM);
-  timer_set_oc_value(TIM4, TIM_OC3, MOTORES_MAX_PWM);
-  timer_set_oc_value(TIM4, TIM_OC4, MOTORES_MAX_PWM);
-  timer_enable_oc_output(TIM4, TIM_OC1);
-  timer_enable_oc_output(TIM4, TIM_OC2);
-  timer_enable_oc_output(TIM4, TIM_OC3);
-  timer_enable_oc_output(TIM4, TIM_OC4);
-
-  timer_enable_break_main_output(TIM4);
-
+/**
+ * @brief Configura los TIM3 y TIM4 para lectura en quadratura de encoders.
+ *
+ */
+static void setup_quadrature_encoders(void) {
+  timer_set_period(TIM4, 0xFFFF);
+  timer_slave_set_mode(TIM4, TIM_SMCR_SMS_EM3);
+  timer_ic_set_input(TIM4, TIM_IC1, TIM_IC_IN_TI1);
+  timer_ic_set_input(TIM4, TIM_IC2, TIM_IC_IN_TI2);
   timer_enable_counter(TIM4);
+
+  timer_set_period(TIM3, 0xFFFF);
+  timer_slave_set_mode(TIM3, TIM_SMCR_SMS_EM3);
+  timer_ic_set_input(TIM3, TIM_IC1, TIM_IC_IN_TI1);
+  timer_ic_set_input(TIM3, TIM_IC2, TIM_IC_IN_TI2);
+  timer_enable_counter(TIM3);
 }
 
 static void setup_usart(void) {
@@ -171,7 +145,7 @@ static void setup_dma_adc1(void) {
   dma_set_priority(DMA2, DMA_STREAM0, DMA_SxCR_PL_LOW);
 
   dma_enable_transfer_complete_interrupt(DMA2, DMA_STREAM0);
-  //dma_enable_half_transfer_interrupt(DMA2, DMA_STREAM0);
+  // dma_enable_half_transfer_interrupt(DMA2, DMA_STREAM0);
   dma_set_number_of_data(DMA2, DMA_STREAM0, get_sensors_num());
   dma_enable_circular_mode(DMA2, DMA_STREAM0);
   dma_set_transfer_mode(DMA2, DMA_STREAM0, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
@@ -188,15 +162,67 @@ void dma2_stream0_isr(void) {
   }
 }
 
+/**
+ * @brief Setup SPI.
+ *
+ * SPI is configured as follows:
+ *
+ * - Master mode.
+ * - Clock baud rate: PCLK1 / speed_div; PCLK1 = 36MHz.
+ * - Clock polarity: 0 (idle low; leading edge is a rising edge).
+ * - Clock phase: 0 (out changes on the trailing edge and input data
+ *   captured on rising edge).
+ * - Data frame format: 8-bits.
+ * - Frame format: MSB first.
+ *
+ * NSS is configured to be managed by software.
+ *
+ * Reference: https://github.com/Bulebots/meiga
+ */
+static void setup_spi(uint8_t speed_div) {
+  spi_reset(SPI2);
+
+  spi_init_master(SPI2, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE, SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
+
+  spi_enable_software_slave_management(SPI2);
+  spi_set_nss_high(SPI2);
+
+  spi_enable(SPI2);
+}
+
 void setup(void) {
   setup_clock();
   setup_gpio();
-  setup_rgb_timer();
-  setup_motors_pwm();
   setup_usart();
   setup_dma_adc1();
   setup_adc1();
+  setup_quadrature_encoders();
 
   setup_timer_priorities();
   setup_systick();
+  setup_spi_high_speed();
+}
+
+/**
+ * @brief Setup SPI for gyroscope read, less than 20 MHz.
+ *
+ * The clock baudrate is 84 MHz / 8 = 10.5 MHz.
+ *
+ * Reference: https://github.com/Bulebots/meiga
+ */
+void setup_spi_high_speed() {
+  setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_8);
+  delay(100);
+}
+
+/**
+ * @brief Setup SPI for gyroscope Write, less than 1 MHz.
+ *
+ * The clock baudrate is 84 MHz / 128 = 0.65625 MHz.
+ *
+ * Reference: https://github.com/Bulebots/meiga
+ */
+void setup_spi_low_speed() {
+  setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_128);
+  delay(100);
 }

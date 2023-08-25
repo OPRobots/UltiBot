@@ -7,33 +7,51 @@
 #include "sensors.h"
 #include "setup.h"
 #include "usart.h"
+#include "spi.h"
 
 void sys_tick_handler(void) {
   clock_tick();
-  update_rgb();
 }
 
 int main(void) {
   setup();
 
+  // LED builtin
+  gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13);
+  // Botón builtin
+  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO0);
+
   while (1) {
+
+    if (gpio_get(GPIOA, GPIO0)) {
+      gpio_set(GPIOC, GPIO13);
+
+      spi_write_register(0x03, 0x02);
+      while (gpio_get(GPIOA, GPIO0)) {
+      }
+      spi_write_register(0x03, 0x01);
+    } else {
+      gpio_clear(GPIOC, GPIO13);
+    }
+
+    continue;
     if (!is_competicion_iniciada()) {
-      //TODO: menu
+      // TODO: menu
       if (get_start_btn()) {
-        //TODO: reset menu mode
+        // TODO: reset menu mode
         while (get_start_btn()) {
-          set_rgb(LED_CENTER, 0, 0, 50);
+          // TODO: set_rgb(LED_CENTER, 0, 0, 50);
         }
         uint32_t millisInicio = get_clock_ticks();
-        uint16_t millisPasados = 5;
+        // uint16_t millisPasados = 5;
         while (get_clock_ticks() < (millisInicio + get_start_millis())) {
-          millisPasados = get_clock_ticks() - millisInicio;
-          uint8_t r = 0, g = 0;
-          r = map(millisPasados, 0, get_start_millis(), 255, 0);
-          g = map(millisPasados, 0, 1000, 0, 255);
-          set_rgb(LED_CENTER, r, g, 0);
+          // millisPasados = get_clock_ticks() - millisInicio;
+          // uint8_t r = 0, g = 0;
+          // r = map(millisPasados, 0, get_start_millis(), 255, 0);
+          // g = map(millisPasados, 0, 1000, 0, 255);
+          // TODO: set_rgb(LED_CENTER, r, g, 0);
         }
-        set_rgb(LED_CENTER, 0, 0, 0);
+        // TODO: set_rgb(LED_CENTER, 0, 0, 0);
         set_competicion_iniciada(true);
       }
     }

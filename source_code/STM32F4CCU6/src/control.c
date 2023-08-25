@@ -112,7 +112,7 @@ void control_main_loop(void) {
             break;
           default:
             // TODO: definir una estrategia por defecto en caso de error?
-            set_fatal_error_rgb();
+            // TODO: set_fatal_error_rgb();
             set_motors_speed(0, 0);
             break;
         }
@@ -133,7 +133,7 @@ void control_main_loop(void) {
             break;
           default:
             // TODO: definir una apertura por defecto en caso de error?
-            set_fatal_error_rgb();
+            // TODO: set_fatal_error_rgb();
             set_motors_speed(0, 0);
             break;
         }
@@ -142,7 +142,7 @@ void control_main_loop(void) {
         keeping_inside();
         break;
       default:
-        set_fatal_error_rgb();
+        // TODO: set_fatal_error_rgb();
         set_motors_speed(0, 0);
         break;
     }
