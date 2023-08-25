@@ -19,3 +19,19 @@ Robot de Minisumo con 6 sensores SHARP GP2Y0E03
 ## Software
 - Programado con VSCode y PlatformIO
 - Disponible programa con estrategias básicas
+
+
+## KiCAD
+
+Las librerías necesarias para este proyecto se encuentran en [OPRobots/KiCADLibraries](https://github.com/OPRobots/KiCADLibraries)
+
+La estructura tiene que quedar de la siguiente forma:
+
+```bash
+└── kicad_project
+    └── custom_libraries
+        ├── custom_footprints
+        │   ├── *.kicad_mod
+        │   └── ...
+        └── custom_symbols.kicad_sym
+```
