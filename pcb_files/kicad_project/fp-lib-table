@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "custom_library")(type "KiCad")(uri "F:/UltiBot/pcb_files/kicad_project")(options "")(descr ""))
+)
