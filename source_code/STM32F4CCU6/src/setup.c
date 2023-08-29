@@ -17,6 +17,7 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_GPIOC);
 
   rcc_periph_clock_enable(RCC_USART1);
+  rcc_periph_clock_enable(RCC_USART6);
 
   rcc_periph_clock_enable(RCC_ADC1);
 
@@ -43,13 +44,15 @@ static void setup_timer_priorities(void) {
   nvic_set_priority(NVIC_TIM3_IRQ, 16 * 2);
   nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 3);
   //   nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
-  nvic_set_priority(NVIC_USART1_IRQ, 16 * 4);
+  nvic_set_priority(NVIC_USART6_IRQ, 16 * 4);
+  nvic_set_priority(NVIC_USART1_IRQ, 16 * 5);
 
   //   //   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
   //   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_TIM3_IRQ);
   nvic_enable_irq(NVIC_USART1_IRQ);
+  nvic_enable_irq(NVIC_USART6_IRQ);
 }
 
 static void setup_gpio(void) {
@@ -67,6 +70,10 @@ static void setup_gpio(void) {
   // USART1
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
   gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
+
+  // USART6
+  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO11 | GPIO12);
+  gpio_set_af(GPIOA, GPIO_AF8, GPIO11 | GPIO12);
 
   // Entradas Encoders
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO4 | GPIO5 | GPIO6 | GPIO7);
@@ -107,6 +114,49 @@ static void setup_usart(void) {
   // USART_CR1(USART1) |= USART_CR1_RXNEIE;
   // usart_enable_tx_interrupt(USART1);
   usart_enable(USART1);
+}
+
+static void setup_usart_foc(void) {
+  usart_set_baudrate(USART6, 115200);
+  usart_set_databits(USART6, 8);
+  usart_set_stopbits(USART6, USART_STOPBITS_1);
+  usart_set_parity(USART6, USART_PARITY_NONE);
+  usart_set_flow_control(USART6, USART_FLOWCONTROL_NONE);
+  usart_set_mode(USART6, USART_MODE_TX_RX);
+  // USART_CR1(USART6) |= USART_CR1_RXNEIE;
+  usart_enable_rx_interrupt(USART6);
+  usart_enable(USART6);
+}
+
+void usart6_isr(void)
+{
+	static uint8_t data = 'A';
+
+	/* Check if we were called because of RXNE. */
+	if (((USART_CR1(USART6) & USART_CR1_RXNEIE) != 0) &&
+	    ((USART_SR(USART6) & USART_SR_RXNE) != 0)) {
+
+		/* Indicate that we got data. */
+		gpio_toggle(GPIOC, GPIO13);
+
+		/* Retrieve the data from the peripheral. */
+		data = usart_recv(USART6);
+
+		/* Enable transmit interrupt so it sends back the data. */
+		// usart_enable_tx_interrupt(USART6);
+	}
+
+	// /* Check if we were called because of TXE. */
+	// if (((USART_CR1(USART6) & USART_CR1_TXEIE) != 0) &&
+	//     ((USART_SR(USART6) & USART_SR_TXE) != 0)) {
+
+	// 	/* Put data into the transmit register. */
+  //   // printf("%d\n", data);
+	// 	usart_send(USART6, data);
+
+	// 	/* Disable the TXE interrupt as we don't need it anymore. */
+	// 	usart_disable_tx_interrupt(USART6);
+	// }
 }
 
 static void setup_adc1(void) {
@@ -195,6 +245,7 @@ void setup(void) {
   setup_clock();
   setup_gpio();
   setup_usart();
+  setup_usart_foc();
   setup_dma_adc1();
   setup_adc1();
   setup_quadrature_encoders();

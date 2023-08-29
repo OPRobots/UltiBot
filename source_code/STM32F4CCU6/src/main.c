@@ -22,14 +22,22 @@ int main(void) {
   gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO0);
 
   while (1) {
+      // printf("%s\n", "Pato!");
 
     if (!gpio_get(GPIOA, GPIO0)) {
       gpio_set(GPIOC, GPIO13);
 
-      spi_write_register(0x03, 2);
+      // spi_write_register(0x03, 2);
+      printf("%s\n", "Pato!");
+      
+		usart_send_blocking(USART6, 'a');
+		usart_send_blocking(USART6, '\n');
       while (!gpio_get(GPIOA, GPIO0)) {
       }
-      spi_write_register(0x03, 1);
+      // spi_write_register(0x03, 1);
+      printf("%s\n", "Avestruz!");
+		usart_send_blocking(USART6, 's');
+		usart_send_blocking(USART6, '\n');
     } else {
       gpio_clear(GPIOC, GPIO13);
     }

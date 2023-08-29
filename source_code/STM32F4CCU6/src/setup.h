@@ -15,6 +15,7 @@
 #include "config.h"
 #include "leds.h"
 #include "sensors.h"
+#include "usart.h"
 
 void setup(void);
 void setup_spi_high_speed(void);
