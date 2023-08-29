@@ -186,6 +186,7 @@ static void setup_spi(uint8_t speed_div) {
 
   spi_enable_software_slave_management(SPI2);
   spi_set_nss_high(SPI2);
+  // spi_set_bidirectional_mode(SPI2);
 
   spi_enable(SPI2);
 }
@@ -200,7 +201,7 @@ void setup(void) {
 
   setup_timer_priorities();
   setup_systick();
-  setup_spi_high_speed();
+  setup_spi_low_speed();
 }
 
 /**

@@ -23,13 +23,13 @@ int main(void) {
 
   while (1) {
 
-    if (gpio_get(GPIOA, GPIO0)) {
+    if (!gpio_get(GPIOA, GPIO0)) {
       gpio_set(GPIOC, GPIO13);
 
-      spi_write_register(0x03, 0x02);
-      while (gpio_get(GPIOA, GPIO0)) {
+      spi_write_register(0x03, 2);
+      while (!gpio_get(GPIOA, GPIO0)) {
       }
-      spi_write_register(0x03, 0x01);
+      spi_write_register(0x03, 1);
     } else {
       gpio_clear(GPIOC, GPIO13);
     }
