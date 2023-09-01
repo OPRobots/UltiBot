@@ -23,6 +23,12 @@ Robot de Minisumo con 6 sensores SHARP GP2Y0E03
 
 ## KiCAD
 
+### PCB UltiBot v1.0
+![UltiBot PCB Front](./images/UltiBot_pcb_front.png "UltiBot - Chasis")![UltiBot PCB Back](./images/UltiBot_pcb_back.png "UltiBot - Chasis")
+
+
+### Librerías
+
 Las librerías necesarias para este proyecto se encuentran en [OPRobots/KiCADLibraries](https://github.com/OPRobots/KiCADLibraries)
 
 La estructura tiene que quedar de la siguiente forma:
