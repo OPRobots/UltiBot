@@ -1,4 +1,4 @@
-22215614512779346
+22224084034149930
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -91875,6 +91875,20 @@ varistor
 2
 2
 custom_footprints
+1x05 Pad
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+5
+5
+custom_footprints
+BTN_SMD_3x6x2.5mm
+Light Touch Switch, https://industrial.panasonic.com/cdbs/www-data/pdf/ATK0000/ATK0000CE7.pdf
+
+0
+2
+2
+custom_footprints
 BlackPill_STM32F401
 
 
@@ -91882,12 +91896,33 @@ BlackPill_STM32F401
 44
 44
 custom_footprints
+Crystal_SMD_5032-2Pin_5.0x3.2mm
+SMD Crystal SERIES SMD2520/2 http://www.icbase.com/File/PDF/HKC/HKC00061008.pdf, 5.0x3.2mm^2 package
+SMD SMT crystal
+0
+2
+2
+custom_footprints
+JST - XH - Thru (V) - 4Pin - 2.54mm
+JST XH series connector, B4B-XH-AM, with boss (http://www.jst-mfg.com/product/pdf/eng/eXH.pdf), generated with kicad-footprint-generator
+connector JST XH vertical boss
+0
+4
+4
+custom_footprints
 Mini360
 
 
 0
 4
 4
+custom_footprints
+PinHeader_1x03_P2.54mm_Vertical_NoPins
+Through hole straight pin header, 1x03, 2.54mm pitch, single row
+Through hole pin header THT 1x03 2.54mm single row
+0
+3
+3
 custom_footprints
 SimpleFOCMini
 
