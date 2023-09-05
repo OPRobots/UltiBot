@@ -123,40 +123,30 @@ static void setup_usart_foc(void) {
   usart_set_parity(USART6, USART_PARITY_NONE);
   usart_set_flow_control(USART6, USART_FLOWCONTROL_NONE);
   usart_set_mode(USART6, USART_MODE_TX_RX);
-  // USART_CR1(USART6) |= USART_CR1_RXNEIE;
-  usart_enable_rx_interrupt(USART6);
+  USART_CR1(USART6) |= USART_CR1_RXNEIE;
+  // usart_enable_rx_interrupt(USART6);
   usart_enable(USART6);
 }
 
-void usart6_isr(void)
-{
-	static uint8_t data = 'A';
+void usart6_isr(void) {
+  static uint8_t i = 0;
+  static char command[8];
 
-	/* Check if we were called because of RXNE. */
-	if (((USART_CR1(USART6) & USART_CR1_RXNEIE) != 0) &&
-	    ((USART_SR(USART6) & USART_SR_RXNE) != 0)) {
+  /* Check if we were called because of RXNE. */
+  if (((USART_CR1(USART6) & USART_CR1_RXNEIE) != 0) &&
+      ((USART_SR(USART6) & USART_SR_RXNE) != 0)) {
 
-		/* Indicate that we got data. */
-		gpio_toggle(GPIOC, GPIO13);
-
-		/* Retrieve the data from the peripheral. */
-		data = usart_recv(USART6);
-
-		/* Enable transmit interrupt so it sends back the data. */
-		// usart_enable_tx_interrupt(USART6);
-	}
-
-	// /* Check if we were called because of TXE. */
-	// if (((USART_CR1(USART6) & USART_CR1_TXEIE) != 0) &&
-	//     ((USART_SR(USART6) & USART_SR_TXE) != 0)) {
-
-	// 	/* Put data into the transmit register. */
-  //   // printf("%d\n", data);
-	// 	usart_send(USART6, data);
-
-	// 	/* Disable the TXE interrupt as we don't need it anymore. */
-	// 	usart_disable_tx_interrupt(USART6);
-	// }
+    uint8_t data = usart_recv(USART6);
+    if (data != '\n') {
+      command[i++] = data;
+    } else {
+      manage_usart_command(command[0], atoi(&command[1]));
+      for (uint8_t p = 0; p < i; p++) {
+        command[p] = '\0';
+      }
+      i = 0;
+    }
+  }
 }
 
 static void setup_adc1(void) {
@@ -252,7 +242,7 @@ void setup(void) {
 
   setup_timer_priorities();
   setup_systick();
-  setup_spi_low_speed();
+  // setup_spi_low_speed();
 }
 
 /**

@@ -10,4 +10,6 @@
 
 int _write(int file, char *ptr, int len);
 
+void manage_usart_command(char command, int value);
+
 #endif
