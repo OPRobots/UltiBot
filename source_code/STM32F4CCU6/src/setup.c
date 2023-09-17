@@ -140,7 +140,7 @@ void usart6_isr(void) {
     if (data != '\n') {
       command[i++] = data;
     } else {
-      manage_usart_command(command[0], atoi(&command[1]));
+      manage_command(command[0], atoi(&command[1]));
       for (uint8_t p = 0; p < i; p++) {
         command[p] = '\0';
       }

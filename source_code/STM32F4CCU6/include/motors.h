@@ -5,13 +5,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-
-#include "config.h"
-#include "utils.h"
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 
-void set_motors_speed(float velI, float velD);
+#include "command.h"
+#include "config.h"
+#include "utils.h"
+
+
+void set_motors_speed(int8_t velI, int8_t velD);
 
 #endif
