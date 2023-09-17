@@ -1,3 +1,6 @@
 [submodule "pcb_files/kicad_project/custom_libraries"]
 	path = pcb_files/kicad_project/custom_libraries
 	url = https://github.com/OPRobots/KiCADLibraries
+[submodule "source_code/OPRcontrolFOC"]
+	path = source_code/OPRcontrolFOC
+	url = https://github.com/OPRobots/OPRcontrolFOC
