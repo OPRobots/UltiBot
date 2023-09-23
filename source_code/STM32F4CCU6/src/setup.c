@@ -21,8 +21,6 @@ static void setup_clock(void) {
 
   rcc_periph_clock_enable(RCC_ADC1);
 
-  rcc_periph_clock_enable(RCC_SPI2);
-
   rcc_periph_clock_enable(RCC_TIM4);
   rcc_periph_clock_enable(RCC_TIM3);
 
@@ -62,7 +60,7 @@ static void setup_gpio(void) {
   gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13 | GPIO14 | GPIO15);
 
   // Botón de inicio y modo de menú
-  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO11 | GPIO12);
+  gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO8 | GPIO9);
 
   // Entradas analógicas sensores
   gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
@@ -79,11 +77,12 @@ static void setup_gpio(void) {
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO4 | GPIO5 | GPIO6 | GPIO7);
   gpio_set_af(GPIOB, GPIO_AF2, GPIO4 | GPIO5 | GPIO6 | GPIO7);
 
-  // SPI
-  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12);
-  gpio_set(GPIOB, GPIO12);
-  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, GPIO13 | GPIO14 | GPIO15);
-  gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
+  
+  // Index Encoders
+  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO3);
+  gpio_set_af(GPIOB, GPIO_AF15, GPIO3);
+  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO15);
+  gpio_set_af(GPIOA, GPIO_AF15, GPIO15);
 }
 
 /**
@@ -96,12 +95,30 @@ static void setup_quadrature_encoders(void) {
   timer_ic_set_input(TIM4, TIM_IC1, TIM_IC_IN_TI1);
   timer_ic_set_input(TIM4, TIM_IC2, TIM_IC_IN_TI2);
   timer_enable_counter(TIM4);
+  
+  exti_select_source(EXTI3, GPIOB);
+  exti_set_trigger(EXTI3, EXTI_TRIGGER_FALLING);
+  exti_enable_request(EXTI3);
 
   timer_set_period(TIM3, 0xFFFF);
   timer_slave_set_mode(TIM3, TIM_SMCR_SMS_EM3);
   timer_ic_set_input(TIM3, TIM_IC1, TIM_IC_IN_TI1);
   timer_ic_set_input(TIM3, TIM_IC2, TIM_IC_IN_TI2);
   timer_enable_counter(TIM3);
+
+  exti_select_source(EXTI15, GPIOA);
+  exti_set_trigger(EXTI15, EXTI_TRIGGER_FALLING);
+  exti_enable_request(EXTI15);
+}
+
+void exti3_isr(void) {
+  // reset_encoder_right_total_ticks();
+  exti_reset_request(EXTI3);
+}
+
+void exti15_10_isr(void) {
+  // reset_encoder_left_total_ticks();
+  exti_reset_request(EXTI15);
 }
 
 static void setup_usart(void) {
@@ -202,35 +219,6 @@ void dma2_stream0_isr(void) {
   }
 }
 
-/**
- * @brief Setup SPI.
- *
- * SPI is configured as follows:
- *
- * - Master mode.
- * - Clock baud rate: PCLK1 / speed_div; PCLK1 = 36MHz.
- * - Clock polarity: 0 (idle low; leading edge is a rising edge).
- * - Clock phase: 0 (out changes on the trailing edge and input data
- *   captured on rising edge).
- * - Data frame format: 8-bits.
- * - Frame format: MSB first.
- *
- * NSS is configured to be managed by software.
- *
- * Reference: https://github.com/Bulebots/meiga
- */
-static void setup_spi(uint8_t speed_div) {
-  spi_reset(SPI2);
-
-  spi_init_master(SPI2, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE, SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
-
-  spi_enable_software_slave_management(SPI2);
-  spi_set_nss_high(SPI2);
-  // spi_set_bidirectional_mode(SPI2);
-
-  spi_enable(SPI2);
-}
-
 void setup(void) {
   setup_clock();
   setup_gpio();
@@ -242,29 +230,4 @@ void setup(void) {
 
   setup_timer_priorities();
   setup_systick();
-  // setup_spi_low_speed();
-}
-
-/**
- * @brief Setup SPI for gyroscope read, less than 20 MHz.
- *
- * The clock baudrate is 84 MHz / 8 = 10.5 MHz.
- *
- * Reference: https://github.com/Bulebots/meiga
- */
-void setup_spi_high_speed() {
-  setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_8);
-  delay(100);
-}
-
-/**
- * @brief Setup SPI for gyroscope Write, less than 1 MHz.
- *
- * The clock baudrate is 84 MHz / 128 = 0.65625 MHz.
- *
- * Reference: https://github.com/Bulebots/meiga
- */
-void setup_spi_low_speed() {
-  setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_128);
-  delay(100);
 }

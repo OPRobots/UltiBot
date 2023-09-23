@@ -6,22 +6,21 @@
 #include <libopencm3/cm3/systick.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/dma.h>
+#include <libopencm3/stm32/exti.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
-
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "command.h"
 #include "config.h"
 #include "leds.h"
 #include "sensors.h"
-#include "command.h"
 
 void setup(void);
-void setup_spi_high_speed(void);
-void setup_spi_low_speed(void);
 
 #endif
