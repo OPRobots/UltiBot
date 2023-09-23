@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "source_code/STM32F4CCU6"
+		},
+		{
+			"path": "source_code/OPRcontrolFOC"
 		}
 	],
 	"settings": {
