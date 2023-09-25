@@ -17,6 +17,16 @@ int main(void) {
   setup();
 
   while (1) {
+    for (int i = 0; i < get_sensors_num(); i++) {
+      printf("%d: %d\t", i, get_sensor_raw(i));
+    }
+    printf("btn: %d\t", get_start_btn());
+    printf("\n");
+    debug_sensors();
+    delay(50);
+
+    continue;
+
     if (!gpio_get(GPIOA, GPIO0)) {
       gpio_clear(GPIOC, GPIO13);
       // send_command(CMD_MOTOR_ENABLE, 0);

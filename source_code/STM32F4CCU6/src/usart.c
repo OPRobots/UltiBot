@@ -35,7 +35,7 @@ int _write(int file, char *ptr, int len) {
     return -1;
   }
   while (*ptr && (i < len)) {
-    usart_send_blocking(USART6, *ptr);
+    usart_send_blocking(USART1, *ptr);
     i++;
     ptr++;
   }

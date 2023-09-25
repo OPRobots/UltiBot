@@ -4,8 +4,8 @@
 #include "config.h"
 #include "delay.h"
 #include "leds.h"
-#include "utils.h"
 #include "stdint.h"
+#include "utils.h"
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
@@ -16,14 +16,16 @@
 #define RIVAL_SENSOR_MAX 2600
 #define LINE_SENSOR_THRESHOLD 2000
 
-enum SENSORS { SENSOR_FRONT_RIGHT = 0,
-               SENSOR_FRONT_LEFT = 1,
-               SENSOR_ANGLE_LEFT = 2,
-               SENSOR_ANGLE_RIGHT = 3,
-               SENSOR_LEFT = 5,
-               SENSOR_RIGHT = 4,
-               SENSOR_LINE_LEFT = 6,
-               SENSOR_LINE_RIGHT = 7 };
+enum SENSORS {
+  SENSOR_LINE_LEFT = 0,
+  SENSOR_LEFT = 1,
+  SENSOR_ANGLE_LEFT = 2,
+  SENSOR_FRONT_LEFT = 3,
+  SENSOR_FRONT_RIGHT = 4,
+  SENSOR_ANGLE_RIGHT = 5,
+  SENSOR_RIGHT = 6,
+  SENSOR_LINE_RIGHT = 7
+};
 
 uint8_t *get_sensors(void);
 uint8_t get_sensors_num(void);
