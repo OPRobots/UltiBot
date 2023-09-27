@@ -11,5 +11,8 @@ void manage_command(char command, int value) {
 }
 
 void send_command(char command, int value) {
-  printf("%c%d\n", command, value);
+  // printf("%c%d\n", command, value);
+  usart_send_blocking(USART6, command);
+  usart_send_blocking(USART6, value);
+  usart_send_blocking(USART6, '\n');
 }

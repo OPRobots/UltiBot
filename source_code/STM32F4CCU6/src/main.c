@@ -22,8 +22,21 @@ int main(void) {
     }
     printf("btn: %d\t", get_start_btn());
     printf("\n");
-    debug_sensors();
+    // debug_sensors();
     delay(50);
+
+    if (get_start_btn()) {
+      send_command(CMD_MOTOR_SPEED_LEFT, 50);
+      send_command(CMD_MOTOR_SPEED_RIGHT, 50);
+      send_command(CMD_MOTOR_ENABLE, 0);
+      // delay(5000);
+
+    } else {
+
+      send_command(CMD_MOTOR_SPEED_LEFT, 0);
+      send_command(CMD_MOTOR_SPEED_RIGHT, 0);
+      send_command(CMD_MOTOR_DISABLE, 0);
+    }
 
     continue;
 

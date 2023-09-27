@@ -29,10 +29,10 @@ void debug_sensors(void) {
     }
   }
 
-  if (get_sensor_calibrated(SENSOR_LINE_LEFT) > LINE_SENSOR_THRESHOLD) {
-    set_sensor_led(LED_SENSOR_LINE_LEFT, true);
-  }
-  if (get_sensor_calibrated(SENSOR_LINE_RIGHT) > LINE_SENSOR_THRESHOLD) {
-    set_sensor_led(LED_SENSOR_LINE_RIGHT, true);
-  }
+  // if (get_sensor_calibrated(SENSOR_LINE_LEFT) > LINE_SENSOR_THRESHOLD) {
+  //   set_sensor_led(LED_SENSOR_LINE_LEFT, true);
+  // }
+  // if (get_sensor_calibrated(SENSOR_LINE_RIGHT) > LINE_SENSOR_THRESHOLD) {
+  //   set_sensor_led(LED_SENSOR_LINE_RIGHT, true);
+  // }
 }
