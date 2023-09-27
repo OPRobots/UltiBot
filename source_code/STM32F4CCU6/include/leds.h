@@ -17,6 +17,11 @@ enum LEDS { LED_SENSOR_FRONT_RIGHT = 5,
             LED_SENSOR_LINE_LEFT = 0,
             LED_SENSOR_LINE_RIGHT = 7 };
 
-void set_sensor_led(enum LEDS index, bool state);
+void set_menu_led_blink(uint32_t ms);
+void set_menu_led(bool status);
+void set_sensor_led(bool status);
+void set_sensor_led_waiting(uint32_t ms);
+void set_sensor_led_starting(uint32_t ms_start);
+void set_sensor_led_debug(enum LEDS index, bool state);
 
 #endif
