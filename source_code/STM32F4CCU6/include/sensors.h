@@ -35,5 +35,6 @@ uint16_t get_sensor_calibrated(enum SENSORS index);
 bool get_sensor_digital(enum SENSORS index);
 
 void update_sensors_readings(void);
+int16_t get_sensors_position(void);
 
 #endif
