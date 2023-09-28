@@ -20,7 +20,11 @@ volatile uint16_t *get_sensors_raw() {
 }
 
 uint16_t get_sensor_raw(enum SENSORS index) {
-  return sensors_raw[index];
+  if (index == SENSOR_LINE_LEFT || index == SENSOR_LINE_RIGHT) {
+    return LECTURA_MAXIMO_SENSORES_LINEA - sensors_raw[index];
+  } else {
+    return sensors_raw[index];
+  }
 }
 
 uint16_t get_sensor_calibrated(enum SENSORS index) {
@@ -68,9 +72,9 @@ void update_sensors_readings(void) {
   }
   // printf(" > %ld - %ld |", sensor_avg, sensor_sum);
   sensors_position = sensor_avg / sensor_sum - ((1000 * (NUM_SENSORS - NUM_SENSORS_LINE + 1)) / 2);
-  printf("%d ", -3500);
-  printf("%d ", 3500);
-  printf("%d\n", sensors_position);
+  // printf("%d ", -3500);
+  // printf("%d ", 3500);
+  // printf("%d\n", sensors_position);
 }
 
 int16_t get_sensors_position(void) {

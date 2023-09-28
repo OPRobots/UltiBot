@@ -11,6 +11,8 @@
 #include "sensors.h"
 #include "usart.h"
 
-void debug_sensors(void);
+void debug_sensors_leds(void);
+void debug_sensors_raw(void);
+void debug_sensors_calibrated(void);
 
 #endif

@@ -1,6 +1,6 @@
 #include "debug.h"
 
-void debug_sensors(void) {
+void debug_sensors_leds(void) {
   for (uint8_t i = 0; i < NUM_SENSORS; i++) {
     if (i == SENSOR_LINE_LEFT || i == SENSOR_LINE_RIGHT) {
       continue;
@@ -35,4 +35,20 @@ void debug_sensors(void) {
   // if (get_sensor_calibrated(SENSOR_LINE_RIGHT) > LINE_SENSOR_THRESHOLD) {
   //   set_sensor_led_debug(LED_SENSOR_LINE_RIGHT, true);
   // }
+}
+
+void debug_sensors_raw(void) {
+  for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
+    printf("%*d - ", 4, get_sensor_raw(sensor));
+  }
+  printf("\n");
+  delay(50);
+}
+
+void debug_sensors_calibrated(void) {
+  for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
+    printf("%*d - ", 4, get_sensor_calibrated(sensor));
+  }
+  printf("\n");
+  delay(50);
 }
