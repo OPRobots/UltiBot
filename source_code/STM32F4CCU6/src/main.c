@@ -18,8 +18,16 @@ int main(void) {
   setup();
 
   while (true) {
+    // debug_sensors_leds();
+    // debug_sensors_calibrated();
+    debug_sensors_position();
+    // // printf("%d ", get_sensor_raw(SENSOR_FRONT_LEFT));
+    // // printf("%d\n", get_sensor_filtered(SENSOR_FRONT_LEFT));
+    delay(25);
+
     if (!is_competicion_iniciada()) {
       // TODO: menu
+      debug_sensors_leds();
       if (get_start_btn()) {
         set_sensor_led(false);
         while (get_start_btn()) {
@@ -31,9 +39,10 @@ int main(void) {
         }
         set_sensor_led(false);
         set_competicion_iniciada(true);
+        send_command(CMD_MOTOR_ENABLE, 0);
       }
     } else {
-      // control_main_loop();
+      control_main_loop();
     }
   }
   return 0;

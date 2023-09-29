@@ -14,6 +14,6 @@
 #include "utils.h"
 
 
-void set_motors_speed(int8_t velI, int8_t velD);
+void set_motors_speed(int16_t velI, int16_t velD);
 
 #endif

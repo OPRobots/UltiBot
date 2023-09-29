@@ -1,6 +1,18 @@
 #include "motors.h"
 
-void set_motors_speed(int8_t velI, int8_t velD) {
+void set_motors_speed(int16_t velI, int16_t velD) {
+  if (velI > 80) {
+    velI = 80;
+  } else if (velI < -80) {
+    velI = -80;
+  }
+  if (velD > 80) {
+    velD = 80;
+  } else if (velD < -80) {
+    velD = -80;
+  }
+
+  // printf("%d | %d\n", velD, velI);
   send_command(CMD_MOTOR_SPEED_LEFT, velI);
   send_command(CMD_MOTOR_SPEED_RIGHT, velD);
 }

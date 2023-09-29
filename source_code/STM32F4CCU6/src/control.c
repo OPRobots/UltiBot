@@ -4,10 +4,13 @@ static bool competicionIniciada = false;
 static enum STATUS last_state;
 static enum STATUS current_state = STATE_OPENING;
 static enum OPENINGS current_opening = OPENING_FRONT;
-static enum STRATS current_strat = STRAT_KEEPING_INSIDE; // TODO: actualizar estrategia por defecto
+static enum STRATS current_strat = STRAT_PID; // TODO: actualizar estrategia por defecto
 
 static uint32_t current_state_timer = 0;
 static uint32_t current_strat_timer = 0;
+
+static uint32_t strat_pid_last_ms = 0;
+static int16_t strat_pid_last_error = 0;
 
 static void set_state(enum STATUS state) {
   last_state = current_state;
@@ -16,7 +19,7 @@ static void set_state(enum STATUS state) {
 }
 
 static void check_outter_line(void) {
-  if (current_state != STATE_KEEPING_INSIDE && (get_sensor_calibrated(SENSOR_LINE_LEFT) < LINE_SENSOR_THRESHOLD || get_sensor_calibrated(SENSOR_LINE_RIGHT) < LINE_SENSOR_THRESHOLD)) {
+  if (current_state != STATE_KEEPING_INSIDE && (get_sensor_digital(SENSOR_LINE_LEFT) || get_sensor_digital(SENSOR_LINE_RIGHT))) {
     set_state(STATE_KEEPING_INSIDE);
   }
 }
@@ -24,9 +27,9 @@ static void check_outter_line(void) {
 static void keeping_inside(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
   if (time <= 200) {
-    set_motors_speed(-100, -100);
-  } else if (time <= 400) {
-    set_motors_speed(100, -100);
+    set_motors_speed(-TURN_SPEED, -TURN_SPEED);
+  } else if (time <= 600) {
+    set_motors_speed(TURN_SPEED, -TURN_SPEED);
   } else {
     // TODO: comprobar si no hay problemas de referencias al asignar lo mismo que se está modificando justo dentro
     set_state(last_state);
@@ -34,15 +37,19 @@ static void keeping_inside(void) {
 }
 
 static void opening_front(void) {
+  set_state(STATE_RUNNING);
 }
 
 static void opening_right(void) {
+  set_state(STATE_RUNNING);
 }
 
 static void opening_left(void) {
+  set_state(STATE_RUNNING);
 }
 
 static void opening_back(void) {
+  set_state(STATE_RUNNING);
 }
 
 /**
@@ -50,10 +57,27 @@ static void opening_back(void) {
  *
  */
 static void strat_keeping_inside(void) {
-  set_motors_speed(50, 50);
+  set_motors_speed(BASE_SPEED, BASE_SPEED);
   // La gestión de mantenerse en el dohyo se realiza por defecto mediante check_outter_line(void) y keeping_inside(void)
 }
 
+/**
+ * @brief Estrategia que busca y persigue el rival, usando posición dinámica de sensores
+ *
+ */
+static void strat_pid(void) {
+  // TODO: quitar este if si se pasa la función principal a un ISR a 1ms
+  if (get_clock_ticks() - strat_pid_last_ms > 1) {
+    debug_sensors_leds();
+    int16_t error = get_sensors_position();
+    int correccion = error * STRAT_PID_KP + (error-strat_pid_last_error) * STRAT_PID_KD;
+
+    strat_pid_last_error = error;
+    // printf("%d | %d | ", error, correccion);
+    set_motors_speed(BASE_SPEED - correccion, BASE_SPEED + correccion);
+    strat_pid_last_ms = get_clock_ticks();
+  }
+}
 /**
  * @brief Comprueba si el robot está en funcionamiento
  *
@@ -110,6 +134,9 @@ void control_main_loop(void) {
           case STRAT_KEEPING_INSIDE:
             strat_keeping_inside();
             break;
+          case STRAT_PID:
+            strat_pid();
+            break;
           default:
             // TODO: definir una estrategia por defecto en caso de error?
             // TODO: set_fatal_error_rgb();
@@ -142,7 +169,6 @@ void control_main_loop(void) {
         keeping_inside();
         break;
       default:
-        // TODO: set_fatal_error_rgb();
         set_motors_speed(0, 0);
         break;
     }
