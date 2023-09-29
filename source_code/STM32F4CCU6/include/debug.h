@@ -13,6 +13,8 @@
 
 void debug_sensors_leds(void);
 void debug_sensors_raw(void);
+void debug_sensors_filtered(void);
 void debug_sensors_calibrated(void);
+void debug_sensors_position(void);
 
 #endif

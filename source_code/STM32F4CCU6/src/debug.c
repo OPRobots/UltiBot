@@ -5,26 +5,26 @@ void debug_sensors_leds(void) {
     if (i == SENSOR_LINE_LEFT || i == SENSOR_LINE_RIGHT) {
       continue;
     }
-    uint16_t value = get_sensor_calibrated(i);
+    bool state = get_sensor_digital(i);
 
     switch (i) {
       case SENSOR_FRONT_RIGHT:
-        set_sensor_led_debug(LED_SENSOR_FRONT_RIGHT, value > RIVAL_SENSOR_THRESHOLD);
+        set_sensor_led_debug(LED_SENSOR_FRONT_RIGHT, state);
         break;
       case SENSOR_FRONT_LEFT:
-        set_sensor_led_debug(LED_SENSOR_FRONT_LEFT, value > RIVAL_SENSOR_THRESHOLD);
+        set_sensor_led_debug(LED_SENSOR_FRONT_LEFT, state);
         break;
       case SENSOR_ANGLE_LEFT:
-        set_sensor_led_debug(LED_SENSOR_ANGLE_LEFT, value > RIVAL_SENSOR_THRESHOLD);
+        set_sensor_led_debug(LED_SENSOR_ANGLE_LEFT, state);
         break;
       case SENSOR_ANGLE_RIGHT:
-        set_sensor_led_debug(LED_SENSOR_ANGLE_RIGHT, value > RIVAL_SENSOR_THRESHOLD);
+        set_sensor_led_debug(LED_SENSOR_ANGLE_RIGHT, state);
         break;
       case SENSOR_LEFT:
-        set_sensor_led_debug(LED_SENSOR_LEFT, value > RIVAL_SENSOR_THRESHOLD);
+        set_sensor_led_debug(LED_SENSOR_LEFT, state);
         break;
       case SENSOR_RIGHT:
-        set_sensor_led_debug(LED_SENSOR_RIGHT, value > RIVAL_SENSOR_THRESHOLD);
+        set_sensor_led_debug(LED_SENSOR_RIGHT, state);
         break;
     }
   }
@@ -45,10 +45,23 @@ void debug_sensors_raw(void) {
   delay(50);
 }
 
+void debug_sensors_filtered(void) {
+  for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
+    printf("%*d - ", 4, get_sensor_filtered(sensor));
+  }
+  printf("\n");
+  delay(50);
+}
+
 void debug_sensors_calibrated(void) {
   for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
     printf("%*d - ", 4, get_sensor_calibrated(sensor));
   }
   printf("\n");
+  delay(50);
+}
+
+void debug_sensors_position(void) {
+  printf("%*d\n", 4, get_sensors_position());
   delay(50);
 }
