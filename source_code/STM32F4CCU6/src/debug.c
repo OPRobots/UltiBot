@@ -45,14 +45,6 @@ void debug_sensors_raw(void) {
   delay(50);
 }
 
-void debug_sensors_filtered(void) {
-  for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
-    printf("%*d - ", 4, get_sensor_filtered(sensor));
-  }
-  printf("\n");
-  delay(50);
-}
-
 void debug_sensors_calibrated(void) {
   for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
     printf("%*d - ", 4, get_sensor_calibrated(sensor));

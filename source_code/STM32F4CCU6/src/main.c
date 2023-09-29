@@ -12,7 +12,6 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_sensors_readings();
-  update_sensors_position();
 }
 
 int main(void) {

@@ -12,11 +12,13 @@
 
 #define NUM_SENSORS 8
 #define NUM_SENSORS_LINE 2
-#define RIVAL_SENSOR_THRESHOLD 800
+#define RIVAL_SENSOR_THRESHOLD 1200
 #define RIVAL_SENSOR_MAX 2600
 #define LINE_SENSOR_THRESHOLD 2500
 
 #define SENSORS_FILTER_COUNT 20
+#define SENSOR_DIGITAL_COUNT 100
+#define SENSOR_LINE_DIGITAL_COUNT 20
 
 enum SENSORS {
   SENSOR_LINE_LEFT = 0,
@@ -32,13 +34,12 @@ enum SENSORS {
 uint8_t *get_sensors(void);
 uint8_t get_sensors_num(void);
 volatile uint16_t *get_sensors_raw(void);
+
 uint16_t get_sensor_raw(enum SENSORS index);
-uint16_t get_sensor_filtered(enum SENSORS index);
 uint16_t get_sensor_calibrated(enum SENSORS index);
 bool get_sensor_digital(enum SENSORS index);
 
 void update_sensors_readings(void);
-void update_sensors_position(void);
 int16_t get_sensors_position(void);
 
 #endif
