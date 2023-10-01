@@ -1,5 +1,9 @@
 #include "debug.h"
 
+static enum DEBUGS debug = DEBUG_SENSOR_LEDS;
+
+static uint32_t debug_print_ms = 0;
+
 void debug_sensors_leds(void) {
   for (uint8_t i = 0; i < NUM_SENSORS; i++) {
     if (i == SENSOR_LINE_LEFT || i == SENSOR_LINE_RIGHT) {
@@ -38,22 +42,54 @@ void debug_sensors_leds(void) {
 }
 
 void debug_sensors_raw(void) {
-  for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
-    printf("%*d - ", 4, get_sensor_raw(sensor));
+  if (get_clock_ticks() - debug_print_ms > 50) {
+    for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
+      printf("%*d - ", 4, get_sensor_raw(sensor));
+    }
+    printf("\n");
+    debug_print_ms = get_clock_ticks();
   }
-  printf("\n");
-  delay(50);
 }
 
 void debug_sensors_calibrated(void) {
-  for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
-    printf("%*d - ", 4, get_sensor_calibrated(sensor));
+  if (get_clock_ticks() - debug_print_ms > 50) {
+    for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
+      printf("%*d - ", 4, get_sensor_calibrated(sensor));
+    }
+    printf("\n");
+    debug_print_ms = get_clock_ticks();
   }
-  printf("\n");
-  delay(50);
 }
 
 void debug_sensors_position(void) {
-  printf("%*d\n", 4, get_sensors_position());
-  delay(50);
+
+  if (get_clock_ticks() - debug_print_ms > 50) {
+    printf("%*d\n", 4, get_sensors_position());
+    debug_print_ms = get_clock_ticks();
+  }
+}
+
+void set_debug_from_menu(enum DEBUGS _debug) {
+  debug = _debug;
+}
+
+enum DEBUGS get_debug_from_menu(void) {
+  return debug;
+}
+
+void debug_from_menu(void) {
+  switch (debug) {
+    case DEBUG_SENSOR_LEDS:
+      debug_sensors_leds();
+      break;
+    case DEBUG_SENSOR_RAW:
+      debug_sensors_raw();
+      break;
+    case DEBUG_SENSOR_CALIBRATED:
+      debug_sensors_calibrated();
+      break;
+    case DEBUG_SENSOR_POSITION:
+      debug_sensors_position();
+      break;
+  }
 }

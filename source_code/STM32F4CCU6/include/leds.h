@@ -1,12 +1,15 @@
 #ifndef __LEDS_H
 #define __LEDS_H
 
-#include "config.h"
-#include "delay.h"
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
+
 #include <math.h>
 #include <stdio.h>
+
+#include "config.h"
+#include "control.h"
+#include "delay.h"
 
 enum LEDS { LED_SENSOR_FRONT_RIGHT = 5,
             LED_SENSOR_FRONT_LEFT = 2,
@@ -23,5 +26,7 @@ void set_sensor_led(bool status);
 void set_sensor_led_waiting(uint32_t ms);
 void set_sensor_led_starting(uint32_t ms_start);
 void set_sensor_led_debug(enum LEDS index, bool state);
+void set_sensor_led_menu_opening(enum OPENINGS opening);
+void set_sensor_led_menu_strat(enum STRATS strat);
 
 #endif

@@ -4,7 +4,7 @@ static bool competicionIniciada = false;
 static enum STATUS last_state;
 static enum STATUS current_state = STATE_OPENING;
 static enum OPENINGS current_opening = OPENING_FRONT;
-static enum STRATS current_strat = STRAT_PID; // TODO: actualizar estrategia por defecto
+static enum STRATS current_strat = STRAT_KEEPING_INSIDE; // TODO: actualizar estrategia por defecto
 
 static uint32_t current_state_timer = 0;
 static uint32_t current_strat_timer = 0;
@@ -70,7 +70,7 @@ static void strat_pid(void) {
   if (get_clock_ticks() - strat_pid_last_ms > 1) {
     debug_sensors_leds();
     int16_t error = get_sensors_position();
-    int correccion = error * STRAT_PID_KP + (error-strat_pid_last_error) * STRAT_PID_KD;
+    int correccion = error * STRAT_PID_KP + (error - strat_pid_last_error) * STRAT_PID_KD;
 
     strat_pid_last_error = error;
     // printf("%d | %d | ", error, correccion);
@@ -111,6 +111,15 @@ void set_opening(enum OPENINGS opening) {
 }
 
 /**
+ * @brief Obtiene la estrategia de inicio
+ *
+ * @param OPENINGS opening
+ */
+enum OPENINGS get_opening(void) {
+  return current_opening;
+}
+
+/**
  * @brief Establece la estrategia actual
  *
  * @param STRATS strat
@@ -118,6 +127,15 @@ void set_opening(enum OPENINGS opening) {
 void set_strat(enum STRATS strat) {
   current_strat = strat;
   current_strat_timer = get_clock_ticks();
+}
+
+/**
+ * @brief Obtiene la estrategia actual
+ *
+ * @param STRATS strat
+ */
+enum STRATS get_strat(void) {
+  return current_strat;
 }
 
 /**

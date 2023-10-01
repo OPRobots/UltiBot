@@ -16,15 +16,19 @@ enum STATUS {
   STATE_OPENING,
   STATE_RUNNING,
 };
+
+#define NUM_OPENINGS 4
 enum OPENINGS {
-  OPENING_FRONT,
-  OPENING_RIGHT,
-  OPENING_LEFT,
-  OPENING_BACK,
+  OPENING_FRONT = 0,
+  OPENING_RIGHT = 1,
+  OPENING_LEFT = 2,
+  OPENING_BACK = 3,
 };
+
+#define NUM_STRATS 2
 enum STRATS {
-  STRAT_KEEPING_INSIDE,
-  STRAT_PID,
+  STRAT_KEEPING_INSIDE = 0,
+  STRAT_PID = 1,
 };
 
 #define BASE_SPEED 70
@@ -37,7 +41,9 @@ bool is_competicion_iniciada(void);
 void set_competicion_iniciada(bool state);
 
 void set_opening(enum OPENINGS opening);
+enum OPENINGS get_opening(void);
 void set_strat(enum STRATS strat);
+enum STRATS get_strat(void);
 
 void control_main_loop(void);
 
