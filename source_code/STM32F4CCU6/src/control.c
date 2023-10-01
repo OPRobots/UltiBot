@@ -3,7 +3,7 @@
 static bool competicionIniciada = false;
 static enum STATUS last_state;
 static enum STATUS current_state = STATE_OPENING;
-static enum OPENINGS current_opening = OPENING_FRONT;
+static enum OPENINGS current_opening = OPENING_RIGHT;
 static enum STRATS current_strat = STRAT_KEEPING_INSIDE; // TODO: actualizar estrategia por defecto
 
 static uint32_t current_state_timer = 0;
@@ -41,15 +41,42 @@ static void opening_front(void) {
 }
 
 static void opening_right(void) {
-  set_state(STATE_RUNNING);
+  uint32_t time = get_clock_ticks() - current_state_timer;
+  if (time <= 240) {
+    set_motors_speed(80, -80);
+  } else {
+    set_motors_speed(0, 0);
+    if (time >= 600) {
+      send_command(CMD_MOTOR_DISABLE, 0);
+    }
+    // set_state(STATE_RUNNING);
+  }
 }
 
 static void opening_left(void) {
-  set_state(STATE_RUNNING);
+  uint32_t time = get_clock_ticks() - current_state_timer;
+  if (time <= 240) {
+    set_motors_speed(-80, 80);
+  } else {
+    set_motors_speed(0, 0);
+    if (time >= 600) {
+      send_command(CMD_MOTOR_DISABLE, 0);
+    }
+    // set_state(STATE_RUNNING);
+  }
 }
 
 static void opening_back(void) {
-  set_state(STATE_RUNNING);
+  uint32_t time = get_clock_ticks() - current_state_timer;
+  if (time <= 490) {
+    set_motors_speed(80, -80);
+  } else {
+    set_motors_speed(0, 0);
+    if (time >= 800) {
+      send_command(CMD_MOTOR_DISABLE, 0);
+    }
+    // set_state(STATE_RUNNING);
+  }
 }
 
 /**
@@ -74,7 +101,7 @@ static void strat_pid(void) {
 
     strat_pid_last_error = error;
     // printf("%d | %d | ", error, correccion);
-    set_motors_speed(BASE_SPEED - correccion, BASE_SPEED + correccion);
+    set_motors_speed(BASE_SPEED + correccion, BASE_SPEED - correccion);
     strat_pid_last_ms = get_clock_ticks();
   }
 }
@@ -145,7 +172,7 @@ enum STRATS get_strat(void) {
  */
 void control_main_loop(void) {
   if (is_competicion_iniciada()) {
-    check_outter_line();
+    // check_outter_line();
     switch (current_state) {
       case STATE_RUNNING:
         switch (current_strat) {

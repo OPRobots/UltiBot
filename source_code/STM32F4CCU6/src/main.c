@@ -29,21 +29,21 @@ int main(void) {
     if (!is_competicion_iniciada()) {
       check_menu_button();
       // debug_sensors_leds();
-      // if (get_start_btn()) {
-      //   set_sensor_led(false);
-      //   while (get_start_btn()) {
-      //     set_sensor_led_waiting(100);
-      //   }
-      //   uint32_t millisInicio = get_clock_ticks();
-      //   while (get_clock_ticks() < (millisInicio + get_start_millis())) {
-      //     set_sensor_led_starting(millisInicio);
-      //   }
-      //   set_sensor_led(false);
-      //   set_competicion_iniciada(true);
-      //   send_command(CMD_MOTOR_ENABLE, 0);
-      // }
+      if (get_start_btn()) {
+        set_sensor_led(false);
+        while (get_start_btn()) {
+          set_sensor_led_waiting(100);
+        }
+        uint32_t millisInicio = get_clock_ticks();
+        while (get_clock_ticks() < (millisInicio + get_start_millis())) {
+          set_sensor_led_starting(millisInicio);
+        }
+        set_sensor_led(false);
+        set_competicion_iniciada(true);
+        send_command(CMD_MOTOR_ENABLE, 0);
+      }
     } else {
-      // control_main_loop();
+      control_main_loop();
     }
   }
   return 0;
