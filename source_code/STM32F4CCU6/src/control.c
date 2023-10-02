@@ -49,7 +49,7 @@ static void opening_right(void) {
     if (time >= 600) {
       send_command(CMD_MOTOR_DISABLE, 0);
     }
-    // set_state(STATE_RUNNING);
+    set_state(STATE_RUNNING);
   }
 }
 
@@ -62,7 +62,7 @@ static void opening_left(void) {
     if (time >= 600) {
       send_command(CMD_MOTOR_DISABLE, 0);
     }
-    // set_state(STATE_RUNNING);
+    set_state(STATE_RUNNING);
   }
 }
 
@@ -75,7 +75,7 @@ static void opening_back(void) {
     if (time >= 800) {
       send_command(CMD_MOTOR_DISABLE, 0);
     }
-    // set_state(STATE_RUNNING);
+    set_state(STATE_RUNNING);
   }
 }
 
@@ -172,7 +172,7 @@ enum STRATS get_strat(void) {
  */
 void control_main_loop(void) {
   if (is_competicion_iniciada()) {
-    // check_outter_line();
+    check_outter_line();
     switch (current_state) {
       case STATE_RUNNING:
         switch (current_strat) {
