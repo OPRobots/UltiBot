@@ -3,7 +3,7 @@
 static bool competicionIniciada = false;
 static enum STATUS last_state;
 static enum STATUS current_state = STATE_OPENING;
-static enum OPENINGS current_opening = OPENING_RIGHT;
+static enum OPENINGS current_opening = OPENING_FRONT;
 static enum STRATS current_strat = STRAT_KEEPING_INSIDE; // TODO: actualizar estrategia por defecto
 
 static uint32_t current_state_timer = 0;
