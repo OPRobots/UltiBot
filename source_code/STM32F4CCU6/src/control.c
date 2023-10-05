@@ -4,7 +4,7 @@ static bool competicionIniciada = false;
 static enum STATUS last_state;
 static enum STATUS current_state = STATE_OPENING;
 static enum OPENINGS current_opening = OPENING_FRONT;
-static enum STRATS current_strat = STRAT_KEEPING_INSIDE; // TODO: actualizar estrategia por defecto
+static enum STRATS current_strat = STRAT_PID; // TODO: actualizar estrategia por defecto
 
 static uint32_t current_state_timer = 0;
 static uint32_t current_strat_timer = 0;
@@ -103,6 +103,21 @@ static void strat_pid(void) {
     // printf("%d | %d | ", error, correccion);
     set_motors_speed(BASE_SPEED + correccion, BASE_SPEED - correccion);
     strat_pid_last_ms = get_clock_ticks();
+
+    if (get_rival_close_ms() != 0) {
+      uint32_t ms_diff = get_clock_ticks() - get_rival_close_ms();
+      if (ms_diff > 250) {
+        if (ms_diff < 1000) {
+          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 4 : 2);
+        } else if (ms_diff < 1500) {
+          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 3 : 3);
+        } else if (ms_diff < 2000) {
+          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 2 : 4);
+        } else if (ms_diff < 2500) {
+          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 1 : 5);
+        }
+      }
+    }
   }
 }
 /**

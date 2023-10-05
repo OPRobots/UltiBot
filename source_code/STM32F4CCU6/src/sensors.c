@@ -12,6 +12,8 @@ static int16_t sensors_position = 0;
 static uint8_t sensors_filter_index = 0;
 static uint16_t sensors_filter[NUM_SENSORS][SENSORS_FILTER_COUNT];
 
+static bool rival_close = false;
+static uint32_t rival_close_ms = 0;
 
 static void update_sensors(void) {
   for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
@@ -61,6 +63,19 @@ static void update_sensors(void) {
       }
     }
   }
+
+  if (sensors_calibrated[SENSOR_FRONT_LEFT] >= RIVAL_SENSOR_CLOSE_THRESHOLD || sensors_calibrated[SENSOR_FRONT_RIGHT] >= RIVAL_SENSOR_CLOSE_THRESHOLD || sensors_calibrated[SENSOR_ANGLE_LEFT] >= RIVAL_SENSOR_CLOSE_THRESHOLD || sensors_calibrated[SENSOR_ANGLE_RIGHT] >= RIVAL_SENSOR_CLOSE_THRESHOLD) {
+    if (!rival_close) {
+      rival_close_ms = get_clock_ticks();
+    }
+    rival_close = true;
+  } else {
+    if (rival_close) {
+      rival_close_ms = get_clock_ticks();
+    }
+    rival_close = false;
+  }
+
   sensors_filter_index = (sensors_filter_index + 1) % SENSORS_FILTER_COUNT;
 }
 
@@ -70,8 +85,8 @@ static void update_sensors_position(void) {
   uint8_t sensor_detecting = 0;
   for (uint8_t sensor = 1; sensor < NUM_SENSORS - NUM_SENSORS_LINE / 2; sensor++) {
     if (get_sensor_digital(sensor)) {
-      sensor_avg += (sensor) * RIVAL_SENSOR_MAX/* get_sensor_calibrated(sensor) */ * 100;
-      sensor_sum += RIVAL_SENSOR_MAX/* get_sensor_calibrated(sensor) */;
+      sensor_avg += (sensor)*RIVAL_SENSOR_MAX /* get_sensor_calibrated(sensor) */ * 100;
+      sensor_sum += RIVAL_SENSOR_MAX /* get_sensor_calibrated(sensor) */;
       sensor_detecting++;
     }
   }
@@ -83,7 +98,7 @@ static void update_sensors_position(void) {
     // printf("%d\n", sensors_position);
   } else if (sensors_position > 75) {
     sensors_position = 300;
-  } else if(sensors_position < -75) {
+  } else if (sensors_position < -75) {
     sensors_position = -300;
   }
 }
@@ -119,6 +134,14 @@ bool get_sensor_digital(enum SENSORS index) {
 
 int16_t get_sensors_position(void) {
   return sensors_position;
+}
+
+bool is_rival_close(void) {
+  return rival_close;
+}
+
+uint32_t get_rival_close_ms(void) {
+  return rival_close_ms;
 }
 
 void update_sensors_readings(void) {

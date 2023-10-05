@@ -12,12 +12,13 @@
 
 #define NUM_SENSORS 8
 #define NUM_SENSORS_LINE 2
-#define RIVAL_SENSOR_THRESHOLD 800
+#define RIVAL_SENSOR_THRESHOLD 900
+#define RIVAL_SENSOR_CLOSE_THRESHOLD 2300
 #define RIVAL_SENSOR_MAX 2600
 #define LINE_SENSOR_THRESHOLD 2500
 
 #define SENSORS_FILTER_COUNT 20
-#define SENSOR_DIGITAL_COUNT 20
+#define SENSOR_DIGITAL_COUNT 75
 #define SENSOR_LINE_DIGITAL_COUNT 20
 
 enum SENSORS {
@@ -41,5 +42,8 @@ bool get_sensor_digital(enum SENSORS index);
 
 void update_sensors_readings(void);
 int16_t get_sensors_position(void);
+
+bool is_rival_close(void);
+uint32_t get_rival_close_ms(void);
 
 #endif
