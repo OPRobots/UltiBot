@@ -199,10 +199,20 @@ void set_sensor_led_menu_opening(enum OPENINGS opening) {
       gpio_clear(GPIOB, GPIO10 | GPIO2 | GPIO1);
       gpio_set(GPIOC, GPIO13 | GPIO14);
       break;
+    case OPENING_RIGHT_ARC:
+      gpio_clear(GPIOC, GPIO14);
+      gpio_clear(GPIOB, GPIO10 | GPIO2 | GPIO1);
+      gpio_set(GPIOC, GPIO13 | GPIO15);
+      break;
     case OPENING_LEFT:
       gpio_clear(GPIOC, GPIO15 | GPIO14 | GPIO13);
       gpio_clear(GPIOB, GPIO1);
       gpio_set(GPIOB, GPIO2 | GPIO10);
+      break;
+    case OPENING_LEFT_ARC:
+      gpio_clear(GPIOC, GPIO15 | GPIO14 | GPIO13);
+      gpio_clear(GPIOB, GPIO2);
+      gpio_set(GPIOB, GPIO1 | GPIO10);
       break;
     case OPENING_BACK:
       gpio_clear(GPIOC, GPIO15 | GPIO14);

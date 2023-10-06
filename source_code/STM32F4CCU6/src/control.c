@@ -28,7 +28,7 @@ static void keeping_inside(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
   if (time <= 200) {
     set_motors_speed(-TURN_SPEED, -TURN_SPEED);
-  } else if (time <= 600) {
+  } else if (time <= 600 && !is_rival_detected()) {
     set_motors_speed(TURN_SPEED, -TURN_SPEED);
   } else {
     // TODO: comprobar si no hay problemas de referencias al asignar lo mismo que se está modificando justo dentro
@@ -42,39 +42,65 @@ static void opening_front(void) {
 
 static void opening_right(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 240) {
+  if (time <= 240 && !is_rival_detected()) {
     set_motors_speed(80, -80);
   } else {
-    set_motors_speed(0, 0);
-    if (time >= 600) {
-      send_command(CMD_MOTOR_DISABLE, 0);
-    }
+    // set_motors_speed(0, 0);
+    // if (time >= 600) {
+    //   send_command(CMD_MOTOR_DISABLE, 0);
+    // }
+    set_state(STATE_RUNNING);
+  }
+}
+
+static void opening_right_arc(void) {
+  uint32_t time = get_clock_ticks() - current_state_timer;
+  if (time <= 650 && !is_rival_detected()) {
+    set_motors_speed(90, 20);
+  } else {
+    // set_motors_speed(0, 0);
+    // if (time >= 600) {
+    //   send_command(CMD_MOTOR_DISABLE, 0);
+    // }
     set_state(STATE_RUNNING);
   }
 }
 
 static void opening_left(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 240) {
+  if (time <= 240 && !is_rival_detected()) {
     set_motors_speed(-80, 80);
   } else {
-    set_motors_speed(0, 0);
-    if (time >= 600) {
-      send_command(CMD_MOTOR_DISABLE, 0);
-    }
+    // set_motors_speed(0, 0);
+    // if (time >= 600) {
+    //   send_command(CMD_MOTOR_DISABLE, 0);
+    // }
+    set_state(STATE_RUNNING);
+  }
+}
+
+static void opening_left_arc(void) {
+  uint32_t time = get_clock_ticks() - current_state_timer;
+  if (time <= 650 && !is_rival_detected()) {
+    set_motors_speed(20, 90);
+  } else {
+    // set_motors_speed(0, 0);
+    // if (time >= 600) {
+    //   send_command(CMD_MOTOR_DISABLE, 0);
+    // }
     set_state(STATE_RUNNING);
   }
 }
 
 static void opening_back(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 490) {
+  if (time <= 490 && !is_rival_detected()) {
     set_motors_speed(80, -80);
   } else {
-    set_motors_speed(0, 0);
-    if (time >= 800) {
-      send_command(CMD_MOTOR_DISABLE, 0);
-    }
+    // set_motors_speed(0, 0);
+    // if (time >= 800) {
+    //   send_command(CMD_MOTOR_DISABLE, 0);
+    // }
     set_state(STATE_RUNNING);
   }
 }
@@ -189,6 +215,7 @@ void control_main_loop(void) {
   if (is_competicion_iniciada()) {
     check_outter_line();
     switch (current_state) {
+      set_menu_led(true);
       case STATE_RUNNING:
         switch (current_strat) {
           case STRAT_KEEPING_INSIDE:
@@ -205,6 +232,7 @@ void control_main_loop(void) {
         }
         break;
       case STATE_OPENING:
+        set_menu_led_blink(50);
         switch (current_opening) {
           case OPENING_FRONT:
             opening_front();
@@ -212,8 +240,14 @@ void control_main_loop(void) {
           case OPENING_RIGHT:
             opening_right();
             break;
+          case OPENING_RIGHT_ARC:
+            opening_right_arc();
+            break;
           case OPENING_LEFT:
             opening_left();
+            break;
+          case OPENING_LEFT_ARC:
+            opening_left_arc();
             break;
           case OPENING_BACK:
             opening_back();
@@ -227,6 +261,7 @@ void control_main_loop(void) {
         break;
       case STATE_KEEPING_INSIDE:
         keeping_inside();
+        set_menu_led_blink(125);
         break;
       default:
         set_motors_speed(0, 0);

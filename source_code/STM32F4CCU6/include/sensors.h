@@ -45,5 +45,6 @@ int16_t get_sensors_position(void);
 
 bool is_rival_close(void);
 uint32_t get_rival_close_ms(void);
+bool is_rival_detected(void);
 
 #endif

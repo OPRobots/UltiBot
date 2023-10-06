@@ -14,6 +14,8 @@ static uint16_t sensors_filter[NUM_SENSORS][SENSORS_FILTER_COUNT];
 
 static bool rival_close = false;
 static uint32_t rival_close_ms = 0;
+static bool rival_detected = false;
+static uint32_t rival_detected_ms = 0;
 
 static void update_sensors(void) {
   for (uint8_t sensor = 0; sensor < NUM_SENSORS; sensor++) {
@@ -96,10 +98,16 @@ static void update_sensors_position(void) {
     // printf("%d ", -3500);
     // printf("%d ", 3500);
     // printf("%d\n", sensors_position);
+    if (!rival_detected) {
+      rival_detected_ms = get_clock_ticks();
+    }
+    rival_detected = true;
   } else if (sensors_position > 75) {
     sensors_position = 300;
+    rival_detected = false;
   } else if (sensors_position < -75) {
     sensors_position = -300;
+    rival_detected = false;
   }
 }
 
@@ -142,6 +150,10 @@ bool is_rival_close(void) {
 
 uint32_t get_rival_close_ms(void) {
   return rival_close_ms;
+}
+
+bool is_rival_detected(void) {
+  return rival_detected && get_clock_ticks() - rival_detected_ms > 150;
 }
 
 void update_sensors_readings(void) {
