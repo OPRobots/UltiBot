@@ -73,52 +73,6 @@ static void setup_gpio(void) {
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO11 | GPIO12);
   gpio_set_af(GPIOA, GPIO_AF8, GPIO11 | GPIO12);
 
-  // Entradas Encoders
-  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO4 | GPIO5 | GPIO6 | GPIO7);
-  gpio_set_af(GPIOB, GPIO_AF2, GPIO4 | GPIO5 | GPIO6 | GPIO7);
-
-  
-  // Index Encoders
-  gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO3);
-  gpio_set_af(GPIOB, GPIO_AF15, GPIO3);
-  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO15);
-  gpio_set_af(GPIOA, GPIO_AF15, GPIO15);
-}
-
-/**
- * @brief Configura los TIM3 y TIM4 para lectura en quadratura de encoders.
- *
- */
-static void setup_quadrature_encoders(void) {
-  timer_set_period(TIM4, 0xFFFF);
-  timer_slave_set_mode(TIM4, TIM_SMCR_SMS_EM3);
-  timer_ic_set_input(TIM4, TIM_IC1, TIM_IC_IN_TI1);
-  timer_ic_set_input(TIM4, TIM_IC2, TIM_IC_IN_TI2);
-  timer_enable_counter(TIM4);
-  
-  exti_select_source(EXTI3, GPIOB);
-  exti_set_trigger(EXTI3, EXTI_TRIGGER_FALLING);
-  exti_enable_request(EXTI3);
-
-  timer_set_period(TIM3, 0xFFFF);
-  timer_slave_set_mode(TIM3, TIM_SMCR_SMS_EM3);
-  timer_ic_set_input(TIM3, TIM_IC1, TIM_IC_IN_TI1);
-  timer_ic_set_input(TIM3, TIM_IC2, TIM_IC_IN_TI2);
-  timer_enable_counter(TIM3);
-
-  exti_select_source(EXTI15, GPIOA);
-  exti_set_trigger(EXTI15, EXTI_TRIGGER_FALLING);
-  exti_enable_request(EXTI15);
-}
-
-void exti3_isr(void) {
-  // reset_encoder_right_total_ticks();
-  exti_reset_request(EXTI3);
-}
-
-void exti15_10_isr(void) {
-  // reset_encoder_left_total_ticks();
-  exti_reset_request(EXTI15);
 }
 
 static void setup_usart(void) {
@@ -226,7 +180,6 @@ void setup(void) {
   setup_usart_foc();
   setup_dma_adc1();
   setup_adc1();
-  setup_quadrature_encoders();
 
   setup_timer_priorities();
   setup_systick();

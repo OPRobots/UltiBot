@@ -134,13 +134,13 @@ static void strat_pid(void) {
       uint32_t ms_diff = get_clock_ticks() - get_rival_close_ms();
       if (ms_diff > 250) {
         if (ms_diff < 1000) {
-          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 4 : 2);
+          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 4 : 2);
         } else if (ms_diff < 1500) {
-          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 3 : 3);
+          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 3 : 3);
         } else if (ms_diff < 2000) {
-          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 2 : 4);
+          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 2 : 4);
         } else if (ms_diff < 2500) {
-          send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 1 : 5);
+          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 1 : 5);
         }
       }
     }
@@ -215,8 +215,8 @@ void control_main_loop(void) {
   if (is_competicion_iniciada()) {
     check_outter_line();
     switch (current_state) {
-      set_menu_led(true);
       case STATE_RUNNING:
+        set_menu_led(true);
         switch (current_strat) {
           case STRAT_KEEPING_INSIDE:
             strat_keeping_inside();
