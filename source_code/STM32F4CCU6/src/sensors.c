@@ -102,12 +102,15 @@ static void update_sensors_position(void) {
       rival_detected_ms = get_clock_ticks();
     }
     rival_detected = true;
-  } else if (sensors_position > 75) {
-    sensors_position = 300;
+  // } else if (sensors_position > 75) {
+  //   sensors_position = 300;
+  //   rival_detected = false;
+  // } else if (sensors_position < -75) {
+  //   sensors_position = -300;
+  //   rival_detected = false;
+  }else{
     rival_detected = false;
-  } else if (sensors_position < -75) {
-    sensors_position = -300;
-    rival_detected = false;
+    sensors_position = 0;
   }
 }
 

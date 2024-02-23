@@ -20,6 +20,7 @@
 #include "config.h"
 #include "leds.h"
 #include "sensors.h"
+#include "rc5.h"
 
 void setup(void);
 

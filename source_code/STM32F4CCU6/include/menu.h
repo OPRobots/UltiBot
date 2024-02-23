@@ -14,5 +14,7 @@ enum MENUS {
 };
 
 void check_menu_button(void);
+void menu_mode_change(void);
+void menu_config_change(void);
 
 #endif

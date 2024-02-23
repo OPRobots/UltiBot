@@ -17,6 +17,10 @@ uint32_t read_cycle_counter() {
   return dwt_read_cycle_counter();
 }
 
+uint32_t get_us_counter(){
+  return dwt_read_cycle_counter() / (SYSCLK_FREQUENCY_HZ / MICROSECONDS_PER_SECOND);
+}
+
 /**
  * @brief Realiza una pausa en el programa
  * 

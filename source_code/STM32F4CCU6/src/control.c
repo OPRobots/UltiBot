@@ -1,6 +1,7 @@
 #include "control.h"
 
 static bool competicionIniciada = false;
+static bool competicionIniciando = false;
 static enum STATUS last_state;
 static enum STATUS current_state = STATE_OPENING;
 static enum OPENINGS current_opening = OPENING_FRONT;
@@ -28,7 +29,7 @@ static void keeping_inside(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
   if (time <= 200) {
     set_motors_speed(-TURN_SPEED, -TURN_SPEED);
-  } else if (time <= 600 && !is_rival_detected()) {
+  } else if (time <= 400 && !is_rival_detected()) {
     set_motors_speed(TURN_SPEED, -TURN_SPEED);
   } else {
     // TODO: comprobar si no hay problemas de referencias al asignar lo mismo que se está modificando justo dentro
@@ -42,7 +43,7 @@ static void opening_front(void) {
 
 static void opening_right(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 240 && !is_rival_detected()) {
+  if (time <= 140 && !is_rival_detected()) {
     set_motors_speed(80, -80);
   } else {
     // set_motors_speed(0, 0);
@@ -55,20 +56,22 @@ static void opening_right(void) {
 
 static void opening_right_arc(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 650 && !is_rival_detected()) {
-    set_motors_speed(90, 20);
-  } else {
-    // set_motors_speed(0, 0);
+  if (time <= 380 && !is_rival_detected()) {
+    set_motors_speed(90, 40);
+  }else if (time <= 380+240 && !is_rival_detected()) {
+    set_motors_speed(80, -80);
+  }  else {
+    set_motors_speed(0, 0);
     // if (time >= 600) {
     //   send_command(CMD_MOTOR_DISABLE, 0);
     // }
-    set_state(STATE_RUNNING);
+    // set_state(STATE_RUNNING);
   }
 }
 
 static void opening_left(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 240 && !is_rival_detected()) {
+  if (time <= 140 && !is_rival_detected()) {
     set_motors_speed(-80, 80);
   } else {
     // set_motors_speed(0, 0);
@@ -81,9 +84,11 @@ static void opening_left(void) {
 
 static void opening_left_arc(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 650 && !is_rival_detected()) {
-    set_motors_speed(20, 90);
-  } else {
+  if (time <= 380 && !is_rival_detected()) {
+    set_motors_speed(40, 90);
+  }  else if (time <= 380+240 && !is_rival_detected()) {
+    set_motors_speed(-80, 80);
+  }  else {
     // set_motors_speed(0, 0);
     // if (time >= 600) {
     //   send_command(CMD_MOTOR_DISABLE, 0);
@@ -94,7 +99,7 @@ static void opening_left_arc(void) {
 
 static void opening_back(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 490 && !is_rival_detected()) {
+  if (time <= 240 && !is_rival_detected()) {
     set_motors_speed(80, -80);
   } else {
     // set_motors_speed(0, 0);
@@ -111,6 +116,8 @@ static void opening_back(void) {
  */
 static void strat_keeping_inside(void) {
   set_motors_speed(BASE_SPEED, BASE_SPEED);
+  // printf("keeping inside\n");
+  // set_motors_speed(10, 10);
   // La gestión de mantenerse en el dohyo se realiza por defecto mediante check_outter_line(void) y keeping_inside(void)
 }
 
@@ -123,27 +130,27 @@ static void strat_pid(void) {
   if (get_clock_ticks() - strat_pid_last_ms > 1) {
     debug_sensors_leds();
     int16_t error = get_sensors_position();
-    int correccion = error * STRAT_PID_KP + (error - strat_pid_last_error) * STRAT_PID_KD;
+    float correccion = error * STRAT_PID_KP + (error - strat_pid_last_error) * STRAT_PID_KD;
 
     strat_pid_last_error = error;
     // printf("%d | %d | ", error, correccion);
-    set_motors_speed(BASE_SPEED + correccion, BASE_SPEED - correccion);
+    set_motors_speed(BASE_SPEED - correccion, BASE_SPEED + correccion);
     strat_pid_last_ms = get_clock_ticks();
 
-    if (get_rival_close_ms() != 0) {
-      uint32_t ms_diff = get_clock_ticks() - get_rival_close_ms();
-      if (ms_diff > 250) {
-        if (ms_diff < 1000) {
-          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 4 : 2);
-        } else if (ms_diff < 1500) {
-          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 3 : 3);
-        } else if (ms_diff < 2000) {
-          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 2 : 4);
-        } else if (ms_diff < 2500) {
-          // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 1 : 5);
-        }
-      }
-    }
+    // if (get_rival_close_ms() != 0) {
+    //   uint32_t ms_diff = get_clock_ticks() - get_rival_close_ms();
+    //   if (ms_diff > 250) {
+    //     if (ms_diff < 1000) {
+    //       // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 4 : 2);
+    //     } else if (ms_diff < 1500) {
+    //       // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 3 : 3);
+    //     } else if (ms_diff < 2000) {
+    //       // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 2 : 4);
+    //     } else if (ms_diff < 2500) {
+    //       // send_command(CMD_CONFIG_SINE_STEP, is_rival_close() ? 1 : 5);
+    //     }
+    //   }
+    // }
   }
 }
 /**
@@ -164,9 +171,32 @@ bool is_competicion_iniciada(void) {
 
 void set_competicion_iniciada(bool iniciado) {
   competicionIniciada = iniciado;
+  competicionIniciando = false;
   if (iniciado) {
     set_state(STATE_OPENING);
+  } else {
+    send_command(CMD_MOTOR_DISABLE, 0);
   }
+}
+
+/**
+ * @brief Comprueba si el robot está en funcionamiento
+ *
+ * @return bool
+ */
+
+bool is_competicion_iniciando(void) {
+  return competicionIniciando;
+}
+
+/**
+ * @brief Establece si la competición se ha iniciado y estado actual del robot
+ *
+ * @param iniciado Estado actual del robot
+ */
+
+void set_competicion_iniciando(bool iniciando) {
+  competicionIniciando = iniciando;
 }
 
 /**

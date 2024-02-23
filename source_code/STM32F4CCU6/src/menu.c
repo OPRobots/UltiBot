@@ -76,3 +76,11 @@ void check_menu_button(void) {
   }
   menu_loop();
 }
+
+void menu_mode_change(void){
+  menu_long_press();
+}
+
+void menu_config_change(void){
+  menu_short_press();
+}

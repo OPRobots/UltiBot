@@ -1,5 +1,7 @@
 #include "setup.h"
 
+static enum RC5_TRIGGER rc5_trigger = RC5_TRIGGER_FALLING;
+
 /**
  * @brief Configura los relojes principales del robot
  *
@@ -15,6 +17,8 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOC);
+
+  rcc_periph_clock_enable(RCC_SYSCFG);
 
   rcc_periph_clock_enable(RCC_USART1);
   rcc_periph_clock_enable(RCC_USART6);
@@ -73,6 +77,30 @@ static void setup_gpio(void) {
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO11 | GPIO12);
   gpio_set_af(GPIOA, GPIO_AF8, GPIO11 | GPIO12);
 
+  // Start Module
+  gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO3);
+  // gpio_set_af(GPIOB, GPIO_AF15, GPIO3);
+
+  nvic_enable_irq(NVIC_EXTI3_IRQ);
+  exti_select_source(EXTI3, GPIOB);
+  rc5_trigger = RC5_TRIGGER_FALLING;
+  exti_set_trigger(EXTI3, EXTI_TRIGGER_FALLING);
+  exti_enable_request(EXTI3);
+}
+
+void exti3_isr(void) {
+  exti_reset_request(EXTI3);
+  rc5_register(rc5_trigger);
+  switch (rc5_trigger) {
+    case RC5_TRIGGER_FALLING:
+      rc5_trigger = RC5_TRIGGER_RISING;
+      exti_set_trigger(EXTI3, EXTI_TRIGGER_RISING);
+      break;
+    case RC5_TRIGGER_RISING:
+      rc5_trigger = RC5_TRIGGER_FALLING;
+      exti_set_trigger(EXTI3, EXTI_TRIGGER_FALLING);
+      break;
+  }
 }
 
 static void setup_usart(void) {

@@ -33,14 +33,17 @@ enum STRATS {
   STRAT_PID = 1,
 };
 
-#define BASE_SPEED 70
-#define TURN_SPEED 80
+#define BASE_SPEED 30
+#define TURN_SPEED 60
 
-#define STRAT_PID_KP 0.5
-#define STRAT_PID_KD 50
+#define STRAT_PID_KP 0.25
+#define STRAT_PID_KD 25
 
 bool is_competicion_iniciada(void);
 void set_competicion_iniciada(bool state);
+
+bool is_competicion_iniciando(void);
+void set_competicion_iniciando(bool state);
 
 void set_opening(enum OPENINGS opening);
 enum OPENINGS get_opening(void);
