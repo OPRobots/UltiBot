@@ -95,6 +95,17 @@ static void rc5_manage_command(uint16_t message) {
           break;
       }
       break;
+    default:
+      switch (command) {
+        case 0b01:
+          set_competicion_iniciando(true);
+          break;
+        case 0b10:
+          set_competicion_iniciada(false);
+          break;
+        default:
+          break;
+      }
   }
 }
 
