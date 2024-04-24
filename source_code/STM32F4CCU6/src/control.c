@@ -13,6 +13,9 @@ static uint32_t current_strat_timer = 0;
 static uint32_t strat_pid_last_ms = 0;
 static int16_t strat_pid_last_error = 0;
 
+static uint32_t strat_steps_last_ms = 0;
+static uint16_t strat_steps_count = 0;
+
 static void set_state(enum STATUS state) {
   last_state = current_state;
   current_state = state;
@@ -58,14 +61,14 @@ static void opening_right_arc(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
   if (time <= 380 && !is_rival_detected()) {
     set_motors_speed(90, 40);
-  }else if (time <= 380+240 && !is_rival_detected()) {
+  } else if (time <= 380 + 240 && !is_rival_detected()) {
     set_motors_speed(80, -80);
-  }  else {
-    set_motors_speed(0, 0);
+  } else {
+    // set_motors_speed(0, 0);
     // if (time >= 600) {
     //   send_command(CMD_MOTOR_DISABLE, 0);
     // }
-    // set_state(STATE_RUNNING);
+    set_state(STATE_RUNNING);
   }
 }
 
@@ -86,9 +89,9 @@ static void opening_left_arc(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
   if (time <= 380 && !is_rival_detected()) {
     set_motors_speed(40, 90);
-  }  else if (time <= 380+240 && !is_rival_detected()) {
+  } else if (time <= 380 + 240 && !is_rival_detected()) {
     set_motors_speed(-80, 80);
-  }  else {
+  } else {
     // set_motors_speed(0, 0);
     // if (time >= 600) {
     //   send_command(CMD_MOTOR_DISABLE, 0);
@@ -153,6 +156,23 @@ static void strat_pid(void) {
     // }
   }
 }
+
+static void strat_steps(void) {
+  if (get_clock_ticks() - strat_steps_last_ms > 5000) {
+    set_motors_speed(BASE_SPEED, BASE_SPEED);
+    delay(50);
+    set_motors_speed(0, 0);
+    strat_steps_count++;
+    if (strat_steps_count >= 5) {
+      set_strat(STRAT_PID);
+    }
+    strat_steps_last_ms = get_clock_ticks();
+  }
+  if (is_rival_close()) {
+    set_strat(STRAT_PID);
+  }
+}
+
 /**
  * @brief Comprueba si el robot está en funcionamiento
  *
@@ -253,6 +273,9 @@ void control_main_loop(void) {
             break;
           case STRAT_PID:
             strat_pid();
+            break;
+          case STRAT_STEPS:
+            strat_steps();
             break;
           default:
             // TODO: definir una estrategia por defecto en caso de error?

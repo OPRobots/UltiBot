@@ -27,10 +27,11 @@ enum OPENINGS {
   OPENING_BACK = 5,
 };
 
-#define NUM_STRATS 2
+#define NUM_STRATS 3
 enum STRATS {
   STRAT_KEEPING_INSIDE = 0,
   STRAT_PID = 1,
+  STRAT_STEPS = 2,
 };
 
 #define BASE_SPEED 30

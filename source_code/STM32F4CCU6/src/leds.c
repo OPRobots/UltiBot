@@ -272,5 +272,42 @@ void set_sensor_led_menu_strat(enum STRATS strat) {
         last_sensor_strat_menu_ms = get_clock_ticks();
       }
       break;
+    case STRAT_STEPS:
+      if (get_clock_ticks() - last_sensor_strat_menu_ms > 100) {
+        gpio_clear(GPIOC, GPIO15 | GPIO14 | GPIO13);
+        gpio_clear(GPIOB, GPIO10 | GPIO2 | GPIO1);
+        switch (sensor_strat_menu_count) {
+          case 0:
+            gpio_set(GPIOB, GPIO10);
+            break;
+          case 1:
+            gpio_set(GPIOB, GPIO2);
+            break;
+          case 2:
+            gpio_set(GPIOB, GPIO1);
+            break;
+          case 3:
+            gpio_set(GPIOC, GPIO15);
+            break;
+          case 4:
+            gpio_set(GPIOC, GPIO14);
+            break;
+          case 5:
+            gpio_set(GPIOC, GPIO13);
+            break;
+
+          default:
+            break;
+        }
+
+        if (sensor_strat_menu_count == 0 && sensor_strat_menu_increment < 0) {
+          sensor_strat_menu_increment = 1;
+        } else if (sensor_strat_menu_count == NUM_SENSORS - NUM_SENSORS_LINE - 1 && sensor_strat_menu_increment > 0) {
+          sensor_strat_menu_increment = -1;
+        }
+        sensor_strat_menu_count += sensor_strat_menu_increment;
+        last_sensor_strat_menu_ms = get_clock_ticks();
+      }
+      break;
   }
 }
