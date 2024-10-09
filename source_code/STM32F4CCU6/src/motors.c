@@ -1,6 +1,6 @@
 #include "motors.h"
 
-void set_motors_speed(int16_t velD, int16_t velI) {
+void set_motors_speed(int16_t velI, int16_t velD) {
   if (velI > 80) {
     velI = 80;
   } else if (velI < -80) {

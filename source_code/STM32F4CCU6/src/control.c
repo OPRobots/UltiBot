@@ -46,7 +46,7 @@ static void opening_front(void) {
 
 static void opening_right(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 140 && !is_rival_detected()) {
+  if (time <= 70 || (time <= 140 && !is_rival_detected())) {
     set_motors_speed(80, -80);
   } else {
     // set_motors_speed(0, 0);
@@ -59,10 +59,10 @@ static void opening_right(void) {
 
 static void opening_right_arc(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 380 && !is_rival_detected()) {
+  if (time <= 190 || (time <= 380 && !is_rival_detected())) {
     set_motors_speed(90, 40);
-  } else if (time <= 380 + 240 && !is_rival_detected()) {
-    set_motors_speed(80, -80);
+  } else if (time <= 190 + 120 || (time <= 380 + 240 && !is_rival_detected())) {
+    set_motors_speed(-80, 80);
   } else {
     // set_motors_speed(0, 0);
     // if (time >= 600) {
@@ -74,7 +74,7 @@ static void opening_right_arc(void) {
 
 static void opening_left(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 140 && !is_rival_detected()) {
+  if (time <= 70 || (time <= 140 && !is_rival_detected())) {
     set_motors_speed(-80, 80);
   } else {
     // set_motors_speed(0, 0);
@@ -87,10 +87,10 @@ static void opening_left(void) {
 
 static void opening_left_arc(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 380 && !is_rival_detected()) {
+  if (time <= 190 || (time <= 380 && !is_rival_detected())) {
     set_motors_speed(40, 90);
-  } else if (time <= 380 + 240 && !is_rival_detected()) {
-    set_motors_speed(-80, 80);
+  } else if (time <= 190 + 120 || (time <= 380 + 240 && !is_rival_detected())) {
+    set_motors_speed(80, -80);
   } else {
     // set_motors_speed(0, 0);
     // if (time >= 600) {
@@ -102,7 +102,7 @@ static void opening_left_arc(void) {
 
 static void opening_back(void) {
   uint32_t time = get_clock_ticks() - current_state_timer;
-  if (time <= 240 && !is_rival_detected()) {
+  if (time <= 120 || (time <= 240 && !is_rival_detected())) {
     set_motors_speed(80, -80);
   } else {
     // set_motors_speed(0, 0);
@@ -137,7 +137,7 @@ static void strat_pid(void) {
 
     strat_pid_last_error = error;
     // printf("%d | %d | ", error, correccion);
-    set_motors_speed(BASE_SPEED - correccion, BASE_SPEED + correccion);
+    set_motors_speed(BASE_SPEED + correccion, BASE_SPEED - correccion);
     strat_pid_last_ms = get_clock_ticks();
 
     // if (get_rival_close_ms() != 0) {
@@ -159,9 +159,13 @@ static void strat_pid(void) {
 
 static void strat_steps(void) {
   if (get_clock_ticks() - strat_steps_last_ms > 5000) {
-    set_motors_speed(BASE_SPEED, BASE_SPEED);
-    delay(50);
-    set_motors_speed(0, 0);
+    uint32_t ms = get_clock_ticks();
+    while (get_clock_ticks() - ms < 50) {
+      set_motors_speed(BASE_SPEED, BASE_SPEED);
+    }
+    while (get_clock_ticks() - ms < 60) {
+      set_motors_speed(0, 0);
+    }
     strat_steps_count++;
     if (strat_steps_count >= 5) {
       set_strat(STRAT_PID);
@@ -193,6 +197,8 @@ void set_competicion_iniciada(bool iniciado) {
   competicionIniciada = iniciado;
   competicionIniciando = false;
   if (iniciado) {
+    strat_steps_count = 0;
+    strat_steps_last_ms = 0;
     set_state(STATE_OPENING);
   } else {
     send_command(CMD_MOTOR_DISABLE, 0);
