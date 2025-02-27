@@ -38,13 +38,13 @@ enum RC5_MANAGE {
 enum RC5_ADDRESS {
   ADDRESS_PROG = 0x0B,
   ADDRESS_COMP = 0x07,
-  ADDRESS_MENU = 0x00,
+  ADDRESS_MENU = 0x1B,
 };
 
 enum RC5_CUSTOM_CMD {
-  CUSTOM_CMD_MENU = 0b1010,
-  CUSTOM_CMD_MENU_UP = 0b1011,
-  CUSTOM_CMD_MENU_DOWN = 0b1100,
+  CUSTOM_CMD_MENU = 0x0D,
+  CUSTOM_CMD_MENU_UP = 0x0E,
+  CUSTOM_CMD_MENU_DOWN = 0x0C,
 };
 
 static uint16_t rc5_stored_data[RC5_DATA_LENGTH];
@@ -72,6 +72,9 @@ static void rc5_manage_command(uint16_t message) {
     case ADDRESS_PROG:
       rc5_stored_data[DATA_STOP] = command;
       rc5_stored_data[DATA_START] = command + DATA_START;
+      rc5_stored_data[DATA_MENU] = command;
+      rc5_stored_data[DATA_MENU_UP] = command + 1;
+      rc5_stored_data[DATA_MENU_DOWN] = command + 2;
       eeprom_set_data(DATA_INDEX_RC5, rc5_stored_data, RC5_DATA_LENGTH);
       eeprom_save();
       break;
@@ -83,29 +86,17 @@ static void rc5_manage_command(uint16_t message) {
       }
       break;
     case ADDRESS_MENU:
-      switch (command) {
-        case CUSTOM_CMD_MENU:
-          menu_mode_change();
-          break;
-        case CUSTOM_CMD_MENU_UP:
-          menu_config_change();
-          break;
-        case CUSTOM_CMD_MENU_DOWN:
-          menu_config_change();
-          break;
+      if (command == CUSTOM_CMD_MENU || command == rc5_stored_data[DATA_MENU]) {
+        menu_mode_change();
+        // printf("Menu mode change\n");
+      } else if (command == CUSTOM_CMD_MENU_UP || command == rc5_stored_data[DATA_MENU_UP]) {
+        menu_config_change();
+        // printf("Menu config change UP\n");
+      } else if (command == CUSTOM_CMD_MENU_DOWN || command == rc5_stored_data[DATA_MENU_DOWN]) {
+        menu_config_change();
+        // printf("Menu config change DOWN\n");
       }
       break;
-    default:
-      switch (command) {
-        case 0b01:
-          set_competicion_iniciando(true);
-          break;
-        case 0b10:
-          set_competicion_iniciada(false);
-          break;
-        default:
-          break;
-      }
   }
 }
 

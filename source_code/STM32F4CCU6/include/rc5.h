@@ -15,7 +15,7 @@ enum RC5_TRIGGER {
   RC5_TRIGGER_RISING,
 };
 
-#define RC5_DATA_LENGTH 2
+#define RC5_DATA_LENGTH 5
 
 void rc5_init(void);
 void rc5_register(enum RC5_TRIGGER trigger);
